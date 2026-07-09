@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ポチマエ
 
-## Getting Started
+**ポチる前に、販売元を3秒チェック。**
 
-First, run the development server:
+Amazonで見落としがちな「販売元」を、購入前に確認するためのWebアプリです。日経新聞の報道（偽装USBメモリの流通・出品審査の課題）を受けて、生活者が販売元情報を自分で確認する行動を支援するために作られました。
+
+## 何をするツールか
+
+1. Amazon上での「販売元情報の見方」を手順ガイドとして案内する
+2. ユーザーが貼り付けた販売元情報テキストを整理・構造化する
+3. 販売元の透明性・商品カテゴリ注意度を3段階の確認レベルで判定する（🔴 要確認／🟡 追加確認／🟢 目立つ懸念なし）
+4. AI講評文（3〜4文）を生成する（`ANTHROPIC_API_KEY` 設定時のみ。未設定でもルール判定は動作）
+
+本ツールは購入前の確認ポイントを整理するものであり、商品の真贋・品質・性能・販売者の信用度を断定するものではありません。
+
+## プライバシー設計
+
+- **商品URLはサーバーに送信しません。** URLはブラウザ内でのみカテゴリ推定に使います
+- **電話番号は扱いません。** 貼り付けテキスト内の電話番号らしき文字列は、送信前にブラウザ内で `[PHONE_REDACTED]` にマスクされます（サーバー側でも二重に検出・破棄）
+- **Claude APIには匿名化した特徴量のみを渡します。** 個人名・住所・URL・セラーID・電話番号は送信しません
+- **判定結果は保存しません。** ステートレスで動作し、DBを持ちません
+
+## セットアップ
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev   # http://localhost:3007
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+環境変数（`.env.local`）:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| 変数 | 必須 | 説明 |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | 任意 | AI講評の生成に使用。未設定の場合はルール判定のみ |
+| `CLAUDE_MODEL` | 任意 | 既定は `claude-haiku-4-5` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 構成
 
-## Learn More
+```
+app/page.tsx                  1ページ完結のUI
+app/api/check/route.ts        POST /api/check（URLは受け取らない）
+lib/categoryGuess.ts          クライアント側カテゴリ推定
+lib/parseSellerText.ts        貼り付けテキストの構造化・電話番号マスク
+lib/rules.ts                  透明性×カテゴリ注意度のルール判定
+lib/critique.ts               Claude APIによるAI講評（匿名化payload）
+lib/types.ts                  型定義
+components/                   Hero / ManualGuide / SellerTextForm / ResultCard / Disclaimer
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 既知の制約（MVP）
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `/api/check` のレート制限はサーバーレスインスタンス単位の簡易実装（10回/分/IP）。厳密な制限が必要になったら Upstash 等の外部ストアに移行する
+- 判定結果はキャッシュしないため、同一テキストの再チェックごとにAI講評のAPIコストが発生する
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Phase 2 候補（MVPでは未実装）
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Amazonページの自動取得
+- ブックマークレット
+- Chrome拡張
+- iOS共有シート
+- 注意カテゴリDB
+- 公式API / Creators APIで取得できる範囲の再調査
+- 判定結果キャッシュ
+- 問い合わせフォーム

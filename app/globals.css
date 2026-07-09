@@ -1,26 +1,71 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Claude Design tokens (~/.claude/design/claude/DESIGN.md) */
+  --canvas: #faf9f5;
+  --surface-soft: #f5f0e8;
+  --surface-card: #efe9de;
+  --surface-dark: #181715;
+  --ink: #141413;
+  --body: #3d3d3a;
+  --muted: #6c6a64;
+  --hairline: #e6dfd8;
+  --primary: #cc785c;
+  --primary-active: #a9583e;
+  --on-primary: #ffffff;
+  --on-dark: #faf9f5;
+  --on-dark-soft: #a09d96;
+
+  /* 確認レベル用の3色トークン（淡色bg + 濃色fgでコントラスト確保） */
+  --level-high-bg: #fbe9e7;
+  --level-high-fg: #8f2b22;
+  --level-high-border: #c64545;
+  --level-medium-bg: #faf3da;
+  --level-medium-fg: #6f540a;
+  --level-medium-border: #d4a017;
+  --level-low-bg: #e7f3e9;
+  --level-low-fg: #285f36;
+  --level-low-border: #5db872;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-canvas: var(--canvas);
+  --color-surface-soft: var(--surface-soft);
+  --color-surface-card: var(--surface-card);
+  --color-surface-dark: var(--surface-dark);
+  --color-ink: var(--ink);
+  --color-body: var(--body);
+  --color-muted: var(--muted);
+  --color-hairline: var(--hairline);
+  --color-primary: var(--primary);
+  --color-primary-active: var(--primary-active);
+  --color-on-primary: var(--on-primary);
+  --color-on-dark: var(--on-dark);
+  --color-on-dark-soft: var(--on-dark-soft);
+  --color-level-high-bg: var(--level-high-bg);
+  --color-level-high-fg: var(--level-high-fg);
+  --color-level-high-border: var(--level-high-border);
+  --color-level-medium-bg: var(--level-medium-bg);
+  --color-level-medium-fg: var(--level-medium-fg);
+  --color-level-medium-border: var(--level-medium-border);
+  --color-level-low-bg: var(--level-low-bg);
+  --color-level-low-fg: var(--level-low-fg);
+  --color-level-low-border: var(--level-low-border);
+  --font-sans: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", sans-serif;
+  --font-display: var(--font-shippori-mincho), "Hiragino Mincho ProN", serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--canvas);
+  color: var(--body);
+  font-family: var(--font-sans);
+}
+
+/* 日本語見出しは意味単位で折る */
+h1,
+h2,
+h3 {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  line-break: strict;
 }
