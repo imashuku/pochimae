@@ -74,7 +74,7 @@ export default function ResultCard({ result }: Props) {
         <dl className="border border-hairline rounded-lg divide-y divide-hairline mb-2 text-sm">
           {facts.map(([label, value]) => (
             <div key={label} className="flex px-4 py-2.5 gap-3">
-              <dt className="w-40 shrink-0 text-muted">{label}</dt>
+              <dt className="w-40 sm:w-60 shrink-0 text-muted">{label}</dt>
               <dd className="text-ink break-words min-w-0">{value}</dd>
             </div>
           ))}
