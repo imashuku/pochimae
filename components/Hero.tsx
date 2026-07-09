@@ -39,8 +39,11 @@ export default function Hero({ url, onUrlChange, onShowGuide }: Props) {
           }}
         >
           <input
-            type="url"
+            type="text"
             inputMode="url"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             value={url}
             onChange={(e) => onUrlChange(e.target.value)}
             placeholder="Amazonの商品URLを貼り付け（任意）"

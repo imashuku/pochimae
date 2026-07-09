@@ -749,9 +749,8 @@ const FLAG_DEFS = {
   },
   seller_country_not_japan: {
     score: 1,
-    label: '所在地が日本国外です',
-    description:
-      '海外セラーであること自体は問題ではありませんが、返品や問い合わせの際の窓口・条件を購入前に確認しておくと確実です。',
+    label: '所在地は日本国外です',
+    description: '返品・問い合わせ条件を購入前に確認してください。',
   },
   japanese_store_name_with_latin_operator: {
     score: 1,
@@ -763,7 +762,7 @@ const FLAG_DEFS = {
     score: 2,
     label: '店舗名は日本語ですが、所在地は日本国外です',
     description:
-      '日本語の店舗名でも、販売事業者の所在地が日本国外の場合があります。返品条件や問い合わせ先を購入前に確認してください。',
+      '販売事業者がどこの国なのかを購入前に確認してください。',
   },
   fba_third_party: {
     score: 1,
@@ -804,10 +803,11 @@ export function evaluate(parsed: ParsedSellerInfo): CheckResult {
   if (parsed.soldByAmazon) {
     flags.push(makeFlag('sold_by_amazon'));
   } else {
+    // Missing info counts once: no seller info at all → insufficient only;
+    // seller info present but statutory block missing → tokushoho flag only.
     if (!parsed.hasSellerInfo) {
       flags.push(makeFlag('insufficient_seller_info'));
-    }
-    if (parsed.hasTokushohoLikeInfo !== 'present') {
+    } else if (parsed.hasTokushohoLikeInfo !== 'present') {
       flags.push(makeFlag('no_tokushoho_like_info'));
     }
     if (parsed.countryGuess === 'CN' || parsed.countryGuess === 'other') {
@@ -1057,8 +1057,11 @@ export default function Hero({ url, onUrlChange, onShowGuide }: Props) {
           }}
         >
           <input
-            type="url"
+            type="text"
             inputMode="url"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             value={url}
             onChange={(e) => onUrlChange(e.target.value)}
             placeholder="Amazonの商品URLを貼り付け（任意）"
@@ -1457,6 +1460,20 @@ describe('evaluate — split store-name flags', () => {
     expect(signal).toBe('high');
   });
 
+  it('info-poor paste gets insufficient_seller_info only, signal medium', () => {
+    const { ids, signal } = flagIds('なんだかよくわからないメモ書き');
+    expect(ids).toEqual(['insufficient_seller_info']);
+    expect(ids).not.toContain('no_tokushoho_like_info');
+    expect(signal).toBe('medium');
+  });
+
+  it('seller info present but statutory block missing gets tokushoho flag only', () => {
+    const { ids, signal } = flagIds('店舗名: 東京デジタル\n住所: 東京都港区1-2-3');
+    expect(ids).toContain('no_tokushoho_like_info');
+    expect(ids).not.toContain('insufficient_seller_info');
+    expect(signal).toBe('medium');
+  });
+
   it('removed legacy flag id is gone', () => {
     const { ids } = flagIds(
       '店舗名: 毎日上向き\n運営責任者名: zhiping liu\n住所: 江西省吉安市',
@@ -1545,6 +1562,46 @@ describe('ResultCard labels', () => {
   it('maps Presence values to あり/見当たらない', () => {
     expect(html).toContain('あり');
     expect(html).toContain('見当たらない');
+  });
+});
+```
+
+## `components/__tests__/Hero.test.tsx`
+
+```tsx
+import { describe, expect, it } from 'vitest';
+import { renderToStaticMarkup } from 'react-dom/server';
+import Hero from '../Hero';
+import { isAmazonUrl } from '@/lib/categoryGuess';
+
+describe('Hero URL input', () => {
+  const html = renderToStaticMarkup(
+    <Hero url="" onUrlChange={() => {}} onShowGuide={() => {}} />,
+  );
+
+  it('does not rely on browser URL validation (type="text")', () => {
+    // type="url" would block submitting protocol-less values like
+    // amazon.co.jp/dp/xxxx via native form validation.
+    expect(html).toContain('type="text"');
+    expect(html).not.toContain('type="url"');
+  });
+
+  it('keeps URL-friendly input attributes', () => {
+    expect(html).toContain('inputMode="url"');
+    expect(html).toContain('autoCapitalize="none"');
+    expect(html).toContain('spellCheck="false"');
+  });
+});
+
+describe('isAmazonUrl accepts protocol-less Amazon URLs', () => {
+  it('recognizes amazon.co.jp/dp/xxxx without a scheme', () => {
+    expect(isAmazonUrl('amazon.co.jp/dp/B0H5HKHQSJ')).toBe(true);
+    expect(isAmazonUrl('www.amazon.co.jp/dp/B0H5HKHQSJ')).toBe(true);
+    expect(isAmazonUrl('https://www.amazon.co.jp/dp/B0H5HKHQSJ')).toBe(true);
+  });
+
+  it('rejects non-Amazon hosts', () => {
+    expect(isAmazonUrl('example.com/dp/B0H5HKHQSJ')).toBe(false);
   });
 });
 ```

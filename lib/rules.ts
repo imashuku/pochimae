@@ -17,9 +17,8 @@ const FLAG_DEFS = {
   },
   seller_country_not_japan: {
     score: 1,
-    label: '所在地が日本国外です',
-    description:
-      '海外セラーであること自体は問題ではありませんが、返品や問い合わせの際の窓口・条件を購入前に確認しておくと確実です。',
+    label: '所在地は日本国外です',
+    description: '返品・問い合わせ条件を購入前に確認してください。',
   },
   japanese_store_name_with_latin_operator: {
     score: 1,
@@ -31,7 +30,7 @@ const FLAG_DEFS = {
     score: 2,
     label: '店舗名は日本語ですが、所在地は日本国外です',
     description:
-      '日本語の店舗名でも、販売事業者の所在地が日本国外の場合があります。返品条件や問い合わせ先を購入前に確認してください。',
+      '販売事業者がどこの国なのかを購入前に確認してください。',
   },
   fba_third_party: {
     score: 1,
@@ -72,10 +71,11 @@ export function evaluate(parsed: ParsedSellerInfo): CheckResult {
   if (parsed.soldByAmazon) {
     flags.push(makeFlag('sold_by_amazon'));
   } else {
+    // Missing info counts once: no seller info at all → insufficient only;
+    // seller info present but statutory block missing → tokushoho flag only.
     if (!parsed.hasSellerInfo) {
       flags.push(makeFlag('insufficient_seller_info'));
-    }
-    if (parsed.hasTokushohoLikeInfo !== 'present') {
+    } else if (parsed.hasTokushohoLikeInfo !== 'present') {
       flags.push(makeFlag('no_tokushoho_like_info'));
     }
     if (parsed.countryGuess === 'CN' || parsed.countryGuess === 'other') {
