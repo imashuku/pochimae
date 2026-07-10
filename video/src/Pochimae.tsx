@@ -28,23 +28,179 @@ const Stage: React.FC<{ children: React.ReactNode; dark?: boolean }> = ({
   </AbsoluteFill>
 );
 
-// 1: 問い
-const S1: React.FC = () => (
-  <Stage>
-    <div style={{ textAlign: 'center', display: 'grid', gap: 30 }}>
-      <Rise>
-        <Sub>ネット通販で、</Sub>
-      </Rise>
-      <Rise delay={14}>
-        <Title size={78}>
-          「誰が売っているか」まで
-          <br />
-          確認していますか？
-        </Title>
-      </Rise>
-    </div>
-  </Stage>
-);
+// 1: 問い。
+// 「ポチる」動作そのものを絵にする — カーソルが購入ボタンを押し、
+// その真下にある「販売元」の行だけが最後まで見られない、という構図。
+const S1: React.FC = () => {
+  const frame = useCurrentFrame();
+  // ボタン中央よりやや右下で止める（ラベル「今すぐ買う」に被せない）
+  const cursorX = interpolate(frame, [46, 84], [250, 72], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const cursorY = interpolate(frame, [46, 84], [190, 14], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  // 押し込み
+  const press = interpolate(frame, [86, 92, 100], [1, 0.955, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  // クリックの波紋
+  const ripple = interpolate(frame, [88, 116], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  // 押したあとで「販売元」の行に目が落ちる
+  const seller = interpolate(frame, [120, 144], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+
+  const metaRow: React.CSSProperties = {
+    fontFamily: FONT_SANS,
+    fontSize: 21,
+    color: T.muted,
+    display: 'flex',
+    justifyContent: 'space-between',
+  };
+
+  return (
+    <Stage>
+      <div style={{ display: 'grid', gap: 52, justifyItems: 'center' }}>
+        <div style={{ textAlign: 'center', display: 'grid', gap: 24 }}>
+          <Rise>
+            <Sub>ネット通販で、</Sub>
+          </Rise>
+          <Rise delay={12}>
+            <Title size={72}>
+              「誰が売っているか」まで
+              <br />
+              確認していますか？
+            </Title>
+          </Rise>
+        </div>
+
+        <Rise delay={30} distance={36}>
+          <div
+            style={{
+              position: 'relative',
+              width: 620,
+              padding: '34px 36px 30px',
+              background: '#ffffff',
+              border: `1px solid ${T.hairline}`,
+              borderRadius: 18,
+              boxShadow: '0 22px 54px rgba(20,20,19,0.13)',
+              display: 'grid',
+              gap: 20,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: FONT_SANS,
+                fontSize: 40,
+                fontWeight: 800,
+                color: T.ink,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              ￥1,480
+            </div>
+
+            <div style={{ position: 'relative' }}>
+              <div
+                style={{
+                  transform: `scale(${press})`,
+                  transformOrigin: 'center',
+                  background: T.primary,
+                  color: T.onPrimary,
+                  fontFamily: FONT_SANS,
+                  fontSize: 28,
+                  fontWeight: 700,
+                  textAlign: 'center',
+                  padding: '20px 0',
+                  borderRadius: 999,
+                }}
+              >
+                今すぐ買う
+              </div>
+              {/* クリックの波紋 */}
+              <div
+                style={{
+                  position: 'absolute',
+                  left: '50%',
+                  top: '50%',
+                  width: 120,
+                  height: 120,
+                  marginLeft: -60,
+                  marginTop: -60,
+                  borderRadius: 999,
+                  border: `3px solid ${T.primary}`,
+                  transform: `scale(${0.4 + ripple * 2.2})`,
+                  opacity: (1 - ripple) * 0.75,
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'grid', gap: 12, paddingTop: 4 }}>
+              <div style={metaRow}>
+                <span>出荷元</span>
+                <span style={{ color: T.body }}>Amazon.co.jp</span>
+              </div>
+              <div
+                style={{
+                  ...metaRow,
+                  position: 'relative',
+                  padding: '8px 12px',
+                  margin: '-8px -12px',
+                  borderRadius: 10,
+                  background: `rgba(204,120,92,${seller * 0.14})`,
+                  outline: `2px solid rgba(204,120,92,${seller})`,
+                }}
+              >
+                <span style={{ color: seller > 0.5 ? T.primaryActive : T.muted }}>
+                  販売元
+                </span>
+                <span
+                  style={{
+                    color: seller > 0.5 ? T.primaryActive : T.body,
+                    fontWeight: seller > 0.5 ? 700 : 400,
+                  }}
+                >
+                  ？
+                </span>
+              </div>
+            </div>
+
+            {/* カーソル。ボタンの中心へ吸い込まれる */}
+            <div
+              style={{
+                position: 'absolute',
+                left: 310 + cursorX,
+                top: 116 + cursorY,
+                opacity: interpolate(frame, [40, 52], [0, 1], {
+                  extrapolateLeft: 'clamp',
+                  extrapolateRight: 'clamp',
+                }),
+              }}
+            >
+              <svg width="34" height="34" viewBox="0 0 24 24">
+                <path
+                  d="M4 2 L4 19 L8.5 14.8 L11.4 21.3 L14.4 20 L11.5 13.6 L18 13.2 Z"
+                  fill={T.ink}
+                  stroke="#ffffff"
+                  strokeWidth="1.4"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+          </div>
+        </Rise>
+      </div>
+    </Stage>
+  );
+};
 
 // 2: 見落とされている販売元（実Amazon画面。「販売元」行にスポットを当てる）
 const S2: React.FC = () => {
@@ -122,7 +278,9 @@ const S2: React.FC = () => {
 const S3: React.FC = () => {
   const frame = useCurrentFrame();
   // 「1TB」と表示されるが、実際は…
-  const shrink = interpolate(frame, [50, 90], [1, 0.24], {
+  // 表示1TBに対し、実際に入るのは200MBに満たない（＝表示の5000分の1以下）。
+  // 面積比をそのまま描くと点になって見えないので、下限を残して「ほぼゼロ」を示す。
+  const shrink = interpolate(frame, [50, 90], [1, 0.035], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
@@ -141,7 +299,8 @@ const S3: React.FC = () => {
           </Title>
         </Rise>
         <Rise delay={20}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 56 }}>
+          {/* 上端を揃える。ラベルの行数差で箱の底がずれると比較図として読めない */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 56 }}>
             {/* 表示上の容量 */}
             <div style={{ display: 'grid', gap: 12, justifyItems: 'center' }}>
               <div
@@ -171,12 +330,12 @@ const S3: React.FC = () => {
                 fontFamily: FONT_SANS,
                 fontSize: 40,
                 color: T.primary,
-                paddingBottom: 56,
+                paddingTop: 60,
               }}
             >
               →
             </div>
-            {/* 実際の容量（縮む） */}
+            {/* 実際の容量（ほぼ消えるまで縮む） */}
             <div style={{ display: 'grid', gap: 12, justifyItems: 'center' }}>
               <div
                 style={{
@@ -185,44 +344,63 @@ const S3: React.FC = () => {
                   display: 'flex',
                   alignItems: 'flex-end',
                   justifyContent: 'center',
+                  position: 'relative',
+                }}
+              >
+                {/* 1TBの外形。実際の中身がどれだけ小さいかの比較枠 */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    border: `2px dashed ${T.hairline}`,
+                    borderRadius: 12,
+                  }}
+                />
+                <div
+                  style={{
+                    width: 200,
+                    height: Math.max(6, 160 * shrink),
+                    background: T.levelHighBg,
+                    border: `2px solid ${T.levelHighBorder}`,
+                    borderRadius: 6,
+                    opacity: realOpacity,
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  display: 'grid',
+                  gap: 4,
+                  justifyItems: 'center',
+                  opacity: realOpacity,
                 }}
               >
                 <div
                   style={{
-                    width: 200,
-                    height: 160 * shrink,
-                    background: T.levelHighBg,
-                    border: `2px solid ${T.levelHighBorder}`,
-                    borderRadius: 12,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
                     fontFamily: FONT_SANS,
-                    fontSize: 26,
-                    fontWeight: 800,
-                    color: T.levelHighFg,
-                    opacity: realOpacity,
+                    fontSize: 22,
+                    color: T.muted,
                   }}
                 >
-                  240GB
+                  実際に使える容量
                 </div>
-              </div>
-              <div
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: 22,
-                  color: T.levelHighFg,
-                  fontWeight: 700,
-                  opacity: realOpacity,
-                }}
-              >
-                実際に使える容量
+                <div
+                  style={{
+                    whiteSpace: 'nowrap',
+                    fontFamily: FONT_SANS,
+                    fontSize: 32,
+                    fontWeight: 800,
+                    color: T.levelHighFg,
+                  }}
+                >
+                  200MBも入らない
+                </div>
               </div>
             </div>
           </div>
         </Rise>
       </div>
-      <Caption>「1TB」と表示され、書き込みも正常に終わる</Caption>
+      <Caption>「1TB」と表示され、書き込みも正常に終わる — 実容量は表示の5000分の1以下</Caption>
     </Stage>
   );
 };
@@ -258,16 +436,31 @@ const S4: React.FC = () => {
             買う人の問題では、なかった。
           </div>
         </Rise>
-        <div style={{ display: 'flex', gap: 34 }}>
+        {/* 2枚のカードは高さも幅も揃える（説明文の行数差で崩さない） */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '560px 560px',
+            gap: 34,
+            alignItems: 'stretch',
+          }}
+        >
           {facts.map((f, i) => (
-            <Rise key={f.big} delay={16 + i * 14} distance={34}>
+            <Rise
+              key={f.big}
+              delay={16 + i * 14}
+              distance={34}
+              style={{ height: '100%' }}
+            >
               <div
                 style={{
-                  width: 560,
+                  height: '100%',
+                  boxSizing: 'border-box',
                   padding: '40px 38px',
                   borderRadius: 18,
                   border: `1px solid ${T.onDarkSoft}44`,
                   display: 'grid',
+                  gridTemplateRows: 'auto auto 1fr',
                   gap: 14,
                 }}
               >
@@ -369,11 +562,18 @@ const S6: React.FC = () => (
 );
 
 // 7: 何を見ているか（確認ポイント）
+// lib/rules.ts の9つのフラグと1対1で対応させている。増やすときは両方直すこと。
 const S7: React.FC = () => {
   const items = [
-    '所在地は日本国外ではないか',
-    '店舗名は日本語なのに、責任者名はローマ字表記ではないか',
-    '出荷元はAmazonでも、販売元は別の事業者ではないか',
+    '事業者情報が十分に読み取れるか',
+    '特定商取引法に相当する表示があるか',
+    '所在地は日本国外か',
+    '店舗名は日本語なのに、責任者名はローマ字表記か',
+    '店舗名は日本語なのに、所在地は日本国外か',
+    '出荷元はAmazonでも、販売元は別の事業者か',
+    '不具合時の影響が大きいカテゴリの商品か',
+    '販売元はAmazon.co.jpの直販か',
+    '店舗評価は十分な件数と割合があるか',
   ];
   return (
     <Stage>
@@ -381,44 +581,166 @@ const S7: React.FC = () => {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 76,
-          padding: '0 110px',
+          gap: 70,
+          padding: '0 96px',
         }}
       >
-        <div style={{ flex: 1, display: 'grid', gap: 24 }}>
+        <div style={{ flex: 1, display: 'grid', gap: 22 }}>
           <Rise>
-            <Kicker>CHECK POINTS</Kicker>
-          </Rise>
-          {items.map((t, i) => (
-            <Rise key={t} delay={10 + i * 12}>
-              <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                <div
-                  style={{
-                    width: 13,
-                    height: 13,
-                    borderRadius: 99,
-                    background: T.primary,
-                    marginTop: 13,
-                    flex: 'none',
-                  }}
-                />
-                <div
-                  style={{
-                    fontFamily: FONT_SANS,
-                    fontSize: 30,
-                    color: T.ink,
-                    lineHeight: 1.6,
-                    fontWeight: 500,
-                  }}
-                >
-                  {t}
-                </div>
+            <div style={{ display: 'grid', gap: 10 }}>
+              <Kicker>STEP 1 — ルールで整理</Kicker>
+              <div
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: 40,
+                  fontWeight: 800,
+                  color: T.ink,
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                9つの観点を、機械的に。
               </div>
-            </Rise>
-          ))}
+            </div>
+          </Rise>
+          <div style={{ display: 'grid', gap: 13 }}>
+            {items.map((t, i) => (
+              <Rise key={t} delay={16 + i * 7}>
+                <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                  <div
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: 99,
+                      background: T.surfaceCard,
+                      color: T.primaryActive,
+                      fontFamily: FONT_SANS,
+                      fontSize: 14,
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginTop: 5,
+                      flex: 'none',
+                    }}
+                  >
+                    {i + 1}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: FONT_SANS,
+                      fontSize: 24,
+                      color: T.ink,
+                      lineHeight: 1.5,
+                      fontWeight: 500,
+                    }}
+                  >
+                    {t}
+                  </div>
+                </div>
+              </Rise>
+            ))}
+          </div>
         </div>
         <Rise delay={8} distance={40}>
-          <Shot src={A('03-result-card.png')} width={560} height={660} />
+          <Shot src={A('03-result-card.png')} width={520} height={640} />
+        </Rise>
+      </div>
+    </Stage>
+  );
+};
+
+// 8: AI講評。判定はルール、講評はAI — その役割分担をはっきり見せる。
+const S7B: React.FC = () => {
+  const critique =
+    '販売元は日本国外の事業者で、店舗名は日本語ですが、運営責任者名はローマ字表記です。出荷元はAmazonですが、販売元は別の事業者である点にご留意ください。記録メディアは、不具合が起きたときの影響が大きいカテゴリです。購入前に、返品条件とレビュー、販売元情報をもう一度ご確認ください。';
+  const frame = useCurrentFrame();
+  // 講評文をタイプライタで送り出し、「いま生成されている」感を出す
+  const chars = Math.round(
+    interpolate(frame, [40, 190], [0, critique.length], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    }),
+  );
+  return (
+    <Stage>
+      <div style={{ display: 'grid', gap: 34, justifyItems: 'center', width: 1180 }}>
+        <Rise>
+          <div style={{ display: 'grid', gap: 10, justifyItems: 'center' }}>
+            <Kicker>STEP 2 — AIが講評</Kicker>
+            <div
+              style={{
+                fontFamily: FONT_SANS,
+                fontSize: 40,
+                fontWeight: 800,
+                color: T.ink,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              整理した結果を、AIが読み解く。
+            </div>
+          </div>
+        </Rise>
+
+        <Rise delay={16} distance={34}>
+          <div
+            style={{
+              width: 1180,
+              boxSizing: 'border-box',
+              background: '#ffffff',
+              border: `1px solid ${T.hairline}`,
+              borderRadius: 18,
+              padding: '32px 36px',
+              boxShadow: '0 20px 48px rgba(20,20,19,0.10)',
+              display: 'grid',
+              gap: 18,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: 17,
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  color: T.onPrimary,
+                  background: T.primary,
+                  padding: '6px 14px',
+                  borderRadius: 999,
+                }}
+              >
+                AI講評
+              </div>
+              <div style={{ fontFamily: FONT_SANS, fontSize: 18, color: T.muted }}>
+                Claude Haiku 4.5
+              </div>
+            </div>
+            <div
+              style={{
+                fontFamily: FONT_SANS,
+                fontSize: 26,
+                lineHeight: 1.85,
+                color: T.body,
+                minHeight: 200,
+                wordBreak: 'keep-all',
+              }}
+            >
+              {critique.slice(0, chars)}
+              <span style={{ opacity: chars < critique.length ? 1 : 0 }}>▍</span>
+            </div>
+          </div>
+        </Rise>
+
+        <Rise delay={40}>
+          <div
+            style={{
+              fontFamily: FONT_SANS,
+              fontSize: 23,
+              color: T.muted,
+              textAlign: 'center',
+            }}
+          >
+            確認レベルの判定はルールで決まります。AIは講評だけを書きます。
+          </div>
         </Rise>
       </div>
     </Stage>
@@ -617,23 +939,47 @@ const S11: React.FC = () => (
         <Title size={44}>ポチる前に、販売元を3秒チェック。</Title>
       </Rise>
       <Rise delay={22}>
-        <div
-          style={{
-            marginTop: 18,
-            fontFamily: FONT_SANS,
-            fontSize: 34,
-            fontWeight: 700,
-            color: T.onPrimary,
-            background: T.primary,
-            padding: '20px 46px',
-            borderRadius: 14,
-          }}
-        >
-          pochimae.vercel.app
+        <div style={{ display: 'flex', alignItems: 'center', gap: 34, marginTop: 14 }}>
+          <div
+            style={{
+              padding: 12,
+              background: '#ffffff',
+              border: `1px solid ${T.hairline}`,
+              borderRadius: 14,
+              display: 'flex',
+            }}
+          >
+            {/* 264px = QR素材の実寸。縮小するとモジュールが潰れて読み取れなくなる */}
+            <img
+              src={A('qr-pochimae.png')}
+              width={264}
+              height={264}
+              style={{ display: 'block', imageRendering: 'pixelated' }}
+              alt=""
+            />
+          </div>
+          <div style={{ display: 'grid', gap: 12, justifyItems: 'start' }}>
+            <div
+              style={{
+                fontFamily: FONT_SANS,
+                fontSize: 32,
+                fontWeight: 700,
+                color: T.onPrimary,
+                background: T.primary,
+                padding: '18px 40px',
+                borderRadius: 14,
+              }}
+            >
+              pochimae.vercel.app
+            </div>
+            <div style={{ fontFamily: FONT_SANS, fontSize: 21, color: T.muted }}>
+              無料・登録不要。QRからすぐ開けます。
+            </div>
+          </div>
         </div>
       </Rise>
       <Rise delay={34}>
-        <div style={{ fontFamily: FONT_SANS, fontSize: 20, color: T.muted, marginTop: 10 }}>
+        <div style={{ fontFamily: FONT_SANS, fontSize: 20, color: T.muted, marginTop: 12 }}>
           ステップアウトマーケティング合同会社
         </div>
       </Rise>
@@ -641,7 +987,8 @@ const S11: React.FC = () => (
   </Stage>
 );
 
-const SCENE_COMPONENTS = [S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11];
+// 並び順が音声 scene-NN.wav と theme.ts の SCENES に対応する。増減時は3つとも直すこと。
+const SCENE_COMPONENTS = [S1, S2, S3, S4, S5, S6, S7, S7B, S8, S9, S10, S11];
 
 export const PochimaeHowTo: React.FC = () => (
   <AbsoluteFill style={{ background: T.canvas }}>
