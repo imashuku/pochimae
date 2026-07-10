@@ -29,18 +29,26 @@ export const Rise: React.FC<{
   );
 };
 
-// シーン全体の出入り（末尾のフェードアウト）
+// シーン全体の出入り。
+// last=true（最終シーン）ではフェードアウトしない — 動画の最後のフレームが
+// CTAの消えた空白になり、ループ再生やサムネイルで損をするため。
 export const SceneFade: React.FC<{
   children: React.ReactNode;
   durationInFrames: number;
-}> = ({ children, durationInFrames }) => {
+  last?: boolean;
+}> = ({ children, durationInFrames, last }) => {
   const frame = useCurrentFrame();
-  const opacity = interpolate(
-    frame,
-    [0, 8, durationInFrames - 8, durationInFrames],
-    [0, 1, 1, 0],
-    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' },
-  );
+  const opacity = last
+    ? interpolate(frame, [0, 8], [0, 1], {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+      })
+    : interpolate(
+        frame,
+        [0, 8, durationInFrames - 8, durationInFrames],
+        [0, 1, 1, 0],
+        { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' },
+      );
   return <div style={{ opacity, width: '100%', height: '100%' }}>{children}</div>;
 };
 

@@ -46,11 +46,17 @@ const S1: React.FC = () => (
   </Stage>
 );
 
-// 2: 見落とされている販売元（実画面を大きく、寄りで）
+// 2: 見落とされている販売元（実Amazon画面。「販売元」行にスポットを当てる）
 const S2: React.FC = () => {
   const frame = useCurrentFrame();
-  // ゆっくり寄る（実画面の細部が見えてくる）
-  const scale = interpolate(frame, [0, 300], [1.0, 1.09], {
+  // 「販売元」の行に向かって寄る
+  const scale = interpolate(frame, [40, 260], [1.0, 1.26], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  // 枠は寄りが始まってから出す
+  const ring = interpolate(frame, [110, 140], [0, 1], {
+    extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
   return (
@@ -59,12 +65,12 @@ const S2: React.FC = () => {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 70,
-          padding: '0 96px',
+          gap: 90,
+          padding: '0 110px',
           marginBottom: 60,
         }}
       >
-        <div style={{ width: 640, display: 'grid', gap: 26 }}>
+        <div style={{ width: 700, display: 'grid', gap: 26 }}>
           <Rise>
             <Title size={56} align="left">
               販売元は、
@@ -74,19 +80,40 @@ const S2: React.FC = () => {
           </Rise>
           <Rise delay={16}>
             <Sub align="left">
-              そこを開いて所在地まで
+              そこを開いて
               <br />
-              確かめる人は、ほとんどいない。
+              所在地まで確かめる人は、ほとんどいない。
             </Sub>
           </Rise>
         </div>
         <Rise delay={10} distance={40}>
-          <div style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
-            <Shot src={A('01-top.png')} width={780} height={720} />
+          <div
+            style={{
+              transform: `scale(${scale})`,
+              transformOrigin: '50% 52%',
+            }}
+          >
+            <div style={{ position: 'relative' }}>
+              <Shot src={A('amazon-buybox-crop.png')} width={560} fade={false} />
+              {/* 「販売元 毎日上向き」の行を囲む */}
+              <div
+                style={{
+                  position: 'absolute',
+                  left: '6%',
+                  top: '47%',
+                  width: '78%',
+                  height: '14%',
+                  border: `3px solid ${T.primary}`,
+                  borderRadius: 8,
+                  opacity: ring,
+                  boxShadow: `0 0 0 6px ${T.primary}22`,
+                }}
+              />
+            </div>
           </div>
         </Rise>
       </div>
-      <Caption>Amazonの「販売元」、開いたことはありますか</Caption>
+      <Caption>購入ボタンのすぐ下。ここを見たことがありますか</Caption>
     </Stage>
   );
 };
@@ -127,7 +154,7 @@ const S4: React.FC = () => (
         <Title size={54}>販売元情報を、貼り付けるだけ。</Title>
       </Rise>
       <Rise delay={16} distance={40}>
-        <Shot src={A('02-pasted.png')} width={900} height={520} />
+        <Shot src={A('02-pasted.png')} width={880} fade={false} />
       </Rise>
     </div>
     <Caption>「特定商取引法に基づく表記」をコピーして貼り付け</Caption>
@@ -299,7 +326,7 @@ const S7: React.FC = () => {
                   {w.t}
                 </div>
                 <div
-                  style={{ fontFamily: FONT_SANS, fontSize: 22, color: T.muted }}
+                  style={{ fontFamily: FONT_SANS, fontSize: 22, color: T.body }}
                 >
                   {w.s}
                 </div>
@@ -416,7 +443,10 @@ export const PochimaeHowTo: React.FC = () => (
       const { from, durationInFrames } = sceneFrames(id);
       return (
         <Sequence key={id} from={from} durationInFrames={durationInFrames}>
-          <SceneFade durationInFrames={durationInFrames}>
+          <SceneFade
+            durationInFrames={durationInFrames}
+            last={id === SCENE_COMPONENTS.length}
+          >
             <C />
           </SceneFade>
           <Audio src={V(id)} />
