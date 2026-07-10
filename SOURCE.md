@@ -71,6 +71,67 @@ components/                   Hero / ManualGuide / SellerTextForm / ResultCard /
 - 問い合わせフォーム
 ```
 
+## `ROADMAP.md`
+
+```md
+# ポチマエ ロードマップ（Phase 2）
+
+方針: ポチマエは「AI診断ツール」ではなく**消費者教育** — 売る価値は「販売元を確認する習慣」。
+すべての施策・コピーは「ネット通販では『誰が売っているか』まで確認していますか？」を軸にする。
+偽装USB報道は「開発のきっかけ」として控えめに触れるに留める（ニュースの寿命に依存しない）。
+
+## Phase 2-0: 共通基盤（最初に着手・全施策の土台）
+
+1. **プリフィル入口（URLフラグメント）** — `https://pochimae.vercel.app/#s=<encodeURIComponent(販売元テキスト)>` を開くと
+   貼り付け欄に自動投入→自動チェック。`#` フラグメントはサーバーに送信されないため「URL・テキストをサーバーログに残さない」設計を維持できる。
+   ブックマークレット／iPhone共有シート／Chrome拡張の3つがすべてこの1本に乗る。
+2. **LPコピー修正** — 事件前面→習慣軸へ。ヒーロー直下に「ネット通販では『誰が売っているか』まで確認していますか？」。
+
+## Phase 2-1: ブックマークレット ★★★★★（審査不要・即日リリース可能）
+
+- Amazon商品ページのDOMから販売元名・セラーID・出荷元を抽出し、`#s=` 付きでポチマエを開くJS。貼り付け30秒→3秒。
+- 導入ページ `/bookmarklet` を新設（ドラッグ登録の手順、スマホSafariでの登録手順）。
+- 検証: 実際のAmazon商品ページ（直販/FBA/海外セラー）3パターンで動作確認。
+
+## Phase 2-3: iPhone共有シート ★★★★★（審査不要 — Chrome拡張より前倒し推奨）
+
+- Appleショートカット1本: Safari共有シートでURLを受け取り→ポチマエを開く（まずはURL渡し＋確認手順ガイド表示で成立）。
+- iCloudリンクで配布し、サイトに導入ボタンを設置。
+- ※順番変更の理由: Chrome拡張はWebストア審査のリードタイム（数日〜）があるため、**拡張は早めに審査提出だけ済ませ、待ち時間にiOS対応を完了**させるのが効率的。
+
+## Phase 2-2: Chrome拡張 ★★★★★（本命・審査あり）
+
+- Manifest V3。商品ページで拡張アイコン→「販売元チェック」1クリック。
+- content scriptがDOMから販売元情報（必要ならセラープロフィールも）を取得し、ポチマエの判定を表示。
+- Chrome Webストア: デベロッパー登録（$5）→審査提出（数日〜2週間）。**実装完了次第すぐ提出**。
+- コードは本リポジトリ `extension/` で管理。
+
+## Phase 2-4: ブランド検索 ★★★★☆（AIではなく公開データの合わせ技）
+
+- 入力: ブランド名 →
+  1. Web検索: 公式サイトの実在
+  2. Wikipedia: ブランドの知名度・沿革
+  3. 商標: J-PlatPat検索リンクの自動生成（スクレイピングは規約上避ける）
+  4. **国税庁 法人番号システムAPI**（無料・公式）: 会社の実在確認
+- 結果は既存の確認レベルに加点・減点として統合。
+
+## 発信（Phase 2と並行）
+
+| 施策 | タイミング |
+|---|---|
+| note記事（開発ストーリー・習慣軸） | LPコピー修正後すぐ |
+| X投稿（note-to-tweet 3本セット） | note公開と同時 |
+| Product Hunt | 英語版LPができてから（Phase 2完了後） |
+
+## 実行スケジュール目安
+
+- **Day 1**: 本番公開（済）／AI講評のAPIキー設定／2-0（プリフィル＋LPコピー）
+- **Day 2**: 2-1 ブックマークレット＋導入ページ／note記事ドラフト
+- **Day 3-4**: 2-2 Chrome拡張実装→審査提出 → 待ち時間に 2-3 iPhoneショートカット
+- **審査待ち**: 2-4 ブランド検索の設計・法人番号API試作
+- **拡張公開後**: X投稿第2弾・READMEに全入口を整理
+```
+
 ## `package.json`
 
 ```json
@@ -193,6 +254,12 @@ export default function Home() {
   // The product URL stays in the browser — used only to guess the category.
   const categoryRisk: CategoryRisk = url ? guessCategoryFromUrl(url) : null;
 
+  function scrollBehavior(): ScrollBehavior {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "auto"
+      : "smooth";
+  }
+
   async function runCheck(body: CheckRequest) {
     setLoading(true);
     setError(null);
@@ -207,7 +274,10 @@ export default function Home() {
       }
       setResult((await res.json()) as CheckResult);
       requestAnimationFrame(() =>
-        resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+        resultRef.current?.scrollIntoView({
+          behavior: scrollBehavior(),
+          block: "start",
+        }),
       );
     } catch {
       setError(
@@ -242,7 +312,7 @@ export default function Home() {
             setShowGuide(true);
             requestAnimationFrame(() =>
               guideRef.current?.scrollIntoView({
-                behavior: "smooth",
+                behavior: scrollBehavior(),
                 block: "start",
               }),
             );
@@ -363,6 +433,17 @@ h3 {
   word-break: keep-all;
   overflow-wrap: anywhere;
   line-break: strict;
+}
+
+/* Tailwind v4 preflight はボタンを cursor: default にするため戻す */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 ```
 
@@ -1066,11 +1147,11 @@ export default function Hero({ url, onUrlChange, onShowGuide }: Props) {
             onChange={(e) => onUrlChange(e.target.value)}
             placeholder="Amazonの商品URLを貼り付け（任意）"
             aria-label="Amazonの商品URL"
-            className="flex-1 h-11 px-4 rounded-lg border border-hairline bg-white text-ink text-sm placeholder:text-muted/70 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="flex-1 h-11 px-4 rounded-lg border border-hairline bg-white text-ink text-base placeholder:text-muted/70 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
           <button
             type="submit"
-            className="h-11 px-6 rounded-lg bg-primary text-on-primary text-sm font-medium hover:bg-primary-active transition-colors"
+            className="h-11 px-6 rounded-lg bg-primary text-on-primary text-sm font-medium hover:bg-primary-active transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-active"
           >
             確認手順を見る
           </button>
@@ -1197,14 +1278,14 @@ export default function SellerTextForm({ loading, onCheck, onAmazonDirect }: Pro
           onChange={(e) => setText(e.target.value)}
           rows={7}
           placeholder="店舗名、運営責任者、所在地、評価情報などが含まれる部分を貼り付けてください"
-          className="w-full rounded-lg border border-hairline bg-white text-ink text-sm p-4 leading-relaxed placeholder:text-muted/70 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="w-full rounded-lg border border-hairline bg-white text-ink text-base p-4 leading-relaxed placeholder:text-muted/70 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
         />
         <div className="flex flex-col sm:flex-row gap-3 mt-3">
           <button
             type="button"
             disabled={loading || text.trim().length === 0}
             onClick={() => onCheck(text)}
-            className="h-11 px-6 rounded-lg bg-primary text-on-primary text-sm font-medium hover:bg-primary-active transition-colors disabled:bg-hairline disabled:text-muted"
+            className="h-11 px-6 rounded-lg bg-primary text-on-primary text-sm font-medium hover:bg-primary-active transition-colors disabled:bg-hairline disabled:text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-active"
           >
             {loading ? "チェック中…" : "この販売元情報をチェック"}
           </button>
@@ -1212,7 +1293,7 @@ export default function SellerTextForm({ loading, onCheck, onAmazonDirect }: Pro
             type="button"
             disabled={loading}
             onClick={onAmazonDirect}
-            className="h-11 px-6 rounded-lg bg-white border border-hairline text-ink text-sm font-medium hover:bg-surface-soft transition-colors disabled:text-muted"
+            className="h-11 px-6 rounded-lg bg-white border border-hairline text-ink text-sm font-medium hover:bg-surface-soft transition-colors disabled:text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-active"
           >
             販売元はAmazon.co.jpでした
           </button>
@@ -1232,31 +1313,61 @@ export default function SellerTextForm({ loading, onCheck, onAmazonDirect }: Pro
 import type { CheckResult, Presence, Signal } from "@/lib/types";
 import Disclaimer from "./Disclaimer";
 
+// 判定は「色＋形＋文字」の三重符号化。アイコンは絵文字ではなくSVG
+// （Heroicons outline）を使い、high=円+!、medium=三角+!、low=円+チェックで
+// 形でも区別できるようにする。
+const SIGNAL_ICON_PATHS: Record<Signal, string> = {
+  high: "M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z",
+  medium:
+    "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z",
+  low: "M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+};
+
 const SIGNAL_STYLES: Record<
   Signal,
-  { emoji: string; label: string; note: string; className: string }
+  { label: string; note: string; className: string }
 > = {
   high: {
-    emoji: "🔴",
     label: "要確認",
     note: "購入前に確認したい点が複数あります",
     className:
       "bg-level-high-bg text-level-high-fg border-level-high-border",
   },
   medium: {
-    emoji: "🟡",
     label: "追加確認",
     note: "購入前にもう一歩の確認をおすすめします",
     className:
       "bg-level-medium-bg text-level-medium-fg border-level-medium-border",
   },
   low: {
-    emoji: "🟢",
     label: "目立つ懸念なし",
     note: "販売元情報からは目立つ懸念は見つかりませんでした",
     className: "bg-level-low-bg text-level-low-fg border-level-low-border",
   },
 };
+
+function Icon({ path, className }: { path: string; className: string }) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d={path} />
+    </svg>
+  );
+}
+
+// 確認ポイント用: 加点フラグ=虫めがね、事実メモ=情報アイコン
+const FLAG_CHECK_PATH =
+  "M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z";
+const FLAG_INFO_PATH =
+  "M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z";
 
 function presenceLabel(value: Presence): string {
   switch (value) {
@@ -1292,9 +1403,10 @@ export default function ResultCard({ result }: Props) {
         <div
           className={`flex items-center gap-3 border rounded-xl px-5 py-4 mb-6 ${signal.className}`}
         >
-          <span aria-hidden className="text-3xl leading-none">
-            {signal.emoji}
-          </span>
+          <Icon
+            path={SIGNAL_ICON_PATHS[result.signal]}
+            className="w-9 h-9 shrink-0"
+          />
           <div>
             <p className="text-xl font-bold leading-tight">{signal.label}</p>
             <p className="text-sm leading-snug mt-0.5">{signal.note}</p>
@@ -1305,7 +1417,7 @@ export default function ResultCard({ result }: Props) {
         <dl className="border border-hairline rounded-lg divide-y divide-hairline mb-2 text-sm">
           {facts.map(([label, value]) => (
             <div key={label} className="flex px-4 py-2.5 gap-3">
-              <dt className="w-40 shrink-0 text-muted">{label}</dt>
+              <dt className="w-40 sm:w-60 shrink-0 text-muted">{label}</dt>
               <dd className="text-ink break-words min-w-0">{value}</dd>
             </div>
           ))}
@@ -1324,9 +1436,10 @@ export default function ResultCard({ result }: Props) {
                   className="border border-hairline rounded-lg px-4 py-3"
                 >
                   <p className="text-sm font-medium text-ink flex items-start gap-2">
-                    <span aria-hidden className="mt-0.5">
-                      {flag.score > 0 ? "☑️" : "🧾"}
-                    </span>
+                    <Icon
+                      path={flag.score > 0 ? FLAG_CHECK_PATH : FLAG_INFO_PATH}
+                      className="w-5 h-5 shrink-0 mt-0.5 text-primary-active"
+                    />
                     {flag.label}
                   </p>
                   <p className="text-sm text-body leading-relaxed mt-1">

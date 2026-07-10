@@ -21,6 +21,12 @@ export default function Home() {
   // The product URL stays in the browser — used only to guess the category.
   const categoryRisk: CategoryRisk = url ? guessCategoryFromUrl(url) : null;
 
+  function scrollBehavior(): ScrollBehavior {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "auto"
+      : "smooth";
+  }
+
   async function runCheck(body: CheckRequest) {
     setLoading(true);
     setError(null);
@@ -35,7 +41,10 @@ export default function Home() {
       }
       setResult((await res.json()) as CheckResult);
       requestAnimationFrame(() =>
-        resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+        resultRef.current?.scrollIntoView({
+          behavior: scrollBehavior(),
+          block: "start",
+        }),
       );
     } catch {
       setError(
@@ -70,7 +79,7 @@ export default function Home() {
             setShowGuide(true);
             requestAnimationFrame(() =>
               guideRef.current?.scrollIntoView({
-                behavior: "smooth",
+                behavior: scrollBehavior(),
                 block: "start",
               }),
             );

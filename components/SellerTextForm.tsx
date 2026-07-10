@@ -23,14 +23,14 @@ export default function SellerTextForm({ loading, onCheck, onAmazonDirect }: Pro
           onChange={(e) => setText(e.target.value)}
           rows={7}
           placeholder="店舗名、運営責任者、所在地、評価情報などが含まれる部分を貼り付けてください"
-          className="w-full rounded-lg border border-hairline bg-white text-ink text-sm p-4 leading-relaxed placeholder:text-muted/70 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="w-full rounded-lg border border-hairline bg-white text-ink text-base p-4 leading-relaxed placeholder:text-muted/70 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
         />
         <div className="flex flex-col sm:flex-row gap-3 mt-3">
           <button
             type="button"
             disabled={loading || text.trim().length === 0}
             onClick={() => onCheck(text)}
-            className="h-11 px-6 rounded-lg bg-primary text-on-primary text-sm font-medium hover:bg-primary-active transition-colors disabled:bg-hairline disabled:text-muted"
+            className="h-11 px-6 rounded-lg bg-primary text-on-primary text-sm font-medium hover:bg-primary-active transition-colors disabled:bg-hairline disabled:text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-active"
           >
             {loading ? "チェック中…" : "この販売元情報をチェック"}
           </button>
@@ -38,7 +38,7 @@ export default function SellerTextForm({ loading, onCheck, onAmazonDirect }: Pro
             type="button"
             disabled={loading}
             onClick={onAmazonDirect}
-            className="h-11 px-6 rounded-lg bg-white border border-hairline text-ink text-sm font-medium hover:bg-surface-soft transition-colors disabled:text-muted"
+            className="h-11 px-6 rounded-lg bg-white border border-hairline text-ink text-sm font-medium hover:bg-surface-soft transition-colors disabled:text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-active"
           >
             販売元はAmazon.co.jpでした
           </button>

@@ -69,3 +69,14 @@ h3 {
   overflow-wrap: anywhere;
   line-break: strict;
 }
+
+/* Tailwind v4 preflight はボタンを cursor: default にするため戻す */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

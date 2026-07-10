@@ -48,11 +48,11 @@ export default function Hero({ url, onUrlChange, onShowGuide }: Props) {
             onChange={(e) => onUrlChange(e.target.value)}
             placeholder="Amazonの商品URLを貼り付け（任意）"
             aria-label="Amazonの商品URL"
-            className="flex-1 h-11 px-4 rounded-lg border border-hairline bg-white text-ink text-sm placeholder:text-muted/70 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="flex-1 h-11 px-4 rounded-lg border border-hairline bg-white text-ink text-base placeholder:text-muted/70 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
           <button
             type="submit"
-            className="h-11 px-6 rounded-lg bg-primary text-on-primary text-sm font-medium hover:bg-primary-active transition-colors"
+            className="h-11 px-6 rounded-lg bg-primary text-on-primary text-sm font-medium hover:bg-primary-active transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-active"
           >
             確認手順を見る
           </button>

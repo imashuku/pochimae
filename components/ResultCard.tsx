@@ -1,31 +1,61 @@
 import type { CheckResult, Presence, Signal } from "@/lib/types";
 import Disclaimer from "./Disclaimer";
 
+// 判定は「色＋形＋文字」の三重符号化。アイコンは絵文字ではなくSVG
+// （Heroicons outline）を使い、high=円+!、medium=三角+!、low=円+チェックで
+// 形でも区別できるようにする。
+const SIGNAL_ICON_PATHS: Record<Signal, string> = {
+  high: "M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z",
+  medium:
+    "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z",
+  low: "M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+};
+
 const SIGNAL_STYLES: Record<
   Signal,
-  { emoji: string; label: string; note: string; className: string }
+  { label: string; note: string; className: string }
 > = {
   high: {
-    emoji: "🔴",
     label: "要確認",
     note: "購入前に確認したい点が複数あります",
     className:
       "bg-level-high-bg text-level-high-fg border-level-high-border",
   },
   medium: {
-    emoji: "🟡",
     label: "追加確認",
     note: "購入前にもう一歩の確認をおすすめします",
     className:
       "bg-level-medium-bg text-level-medium-fg border-level-medium-border",
   },
   low: {
-    emoji: "🟢",
     label: "目立つ懸念なし",
     note: "販売元情報からは目立つ懸念は見つかりませんでした",
     className: "bg-level-low-bg text-level-low-fg border-level-low-border",
   },
 };
+
+function Icon({ path, className }: { path: string; className: string }) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d={path} />
+    </svg>
+  );
+}
+
+// 確認ポイント用: 加点フラグ=虫めがね、事実メモ=情報アイコン
+const FLAG_CHECK_PATH =
+  "M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z";
+const FLAG_INFO_PATH =
+  "M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z";
 
 function presenceLabel(value: Presence): string {
   switch (value) {
@@ -61,9 +91,10 @@ export default function ResultCard({ result }: Props) {
         <div
           className={`flex items-center gap-3 border rounded-xl px-5 py-4 mb-6 ${signal.className}`}
         >
-          <span aria-hidden className="text-3xl leading-none">
-            {signal.emoji}
-          </span>
+          <Icon
+            path={SIGNAL_ICON_PATHS[result.signal]}
+            className="w-9 h-9 shrink-0"
+          />
           <div>
             <p className="text-xl font-bold leading-tight">{signal.label}</p>
             <p className="text-sm leading-snug mt-0.5">{signal.note}</p>
@@ -93,9 +124,10 @@ export default function ResultCard({ result }: Props) {
                   className="border border-hairline rounded-lg px-4 py-3"
                 >
                   <p className="text-sm font-medium text-ink flex items-start gap-2">
-                    <span aria-hidden className="mt-0.5">
-                      {flag.score > 0 ? "☑️" : "🧾"}
-                    </span>
+                    <Icon
+                      path={flag.score > 0 ? FLAG_CHECK_PATH : FLAG_INFO_PATH}
+                      className="w-5 h-5 shrink-0 mt-0.5 text-primary-active"
+                    />
                     {flag.label}
                   </p>
                   <p className="text-sm text-body leading-relaxed mt-1">
