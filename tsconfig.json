@@ -30,5 +30,7 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  // video/ と scripts/ は別プロジェクト。Vercelのビルドでは依存が入らないため、
+  // Next.js の型チェックに含めると "Cannot find module '@remotion/cli/config'" で落ちる。
+  "exclude": ["node_modules", "video", "scripts"]
 }
