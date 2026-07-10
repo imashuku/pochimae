@@ -31,7 +31,7 @@ const Stage: React.FC<{ children: React.ReactNode; dark?: boolean }> = ({
 // 1: 問い。
 // 「ポチる」動作そのものを絵にする — カーソルが購入ボタンを押し、
 // その真下にある「販売元」の行だけが最後まで見られない、という構図。
-const S1: React.FC = () => {
+export const OpeningQuestion: React.FC = () => {
   const frame = useCurrentFrame();
   // ボタン中央よりやや右下で止める（ラベル「今すぐ買う」に被せない）
   const cursorX = interpolate(frame, [46, 84], [250, 72], {
@@ -1016,7 +1016,7 @@ const S11: React.FC = () => (
 );
 
 // 並び順が音声 scene-NN.wav と theme.ts の SCENES に対応する。増減時は3つとも直すこと。
-const SCENE_COMPONENTS = [S1, S2, S3, S4, S5, S6, S7, S7B, S8, S9, S10, S11];
+const SCENE_COMPONENTS = [OpeningQuestion, S2, S3, S4, S5, S6, S7, S7B, S8, S9, S10, S11];
 
 export const DareuriHowTo: React.FC = () => (
   <AbsoluteFill style={{ background: T.canvas }}>

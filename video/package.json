@@ -29,7 +29,8 @@
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
-    "render": "remotion render DareuriHowTo out/dareuri-howto.mp4"
+    "render": "remotion render DareuriHowTo out/dareuri-howto.mp4",
+    "render:short": "remotion render DareuriShort out/dareuri-short.mp4"
   },
   "sideEffects": [
     "*.css"
