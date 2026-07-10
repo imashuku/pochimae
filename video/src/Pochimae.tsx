@@ -11,7 +11,7 @@ import { FONT_SANS, FPS, SCENES, T, sceneFrames } from './theme';
 import { Caption, Kicker, Rise, SceneFade, Shot, Sub, Title, Wordmark } from './parts';
 
 const A = (n: string) => staticFile(`assets/${n}`);
-const V = (n: number) => staticFile(`audio/scene-0${n}.wav`);
+const V = (n: number) => staticFile(`audio/scene-${String(n).padStart(2, '0')}.wav`);
 
 const Stage: React.FC<{ children: React.ReactNode; dark?: boolean }> = ({
   children,
@@ -118,8 +118,215 @@ const S2: React.FC = () => {
   );
 };
 
-// 3: ブランド提示
+// 3: 何が起きているか（容量偽装）
 const S3: React.FC = () => {
+  const frame = useCurrentFrame();
+  // 「1TB」と表示されるが、実際は…
+  const shrink = interpolate(frame, [50, 90], [1, 0.24], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const realOpacity = interpolate(frame, [82, 100], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  return (
+    <Stage>
+      <div style={{ display: 'grid', gap: 46, justifyItems: 'center' }}>
+        <Rise>
+          <Title size={54}>
+            容量を偽装したUSBメモリが、
+            <br />
+            通販で広く出回っています。
+          </Title>
+        </Rise>
+        <Rise delay={20}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 56 }}>
+            {/* 表示上の容量 */}
+            <div style={{ display: 'grid', gap: 12, justifyItems: 'center' }}>
+              <div
+                style={{
+                  width: 200,
+                  height: 160,
+                  background: T.surfaceCard,
+                  borderRadius: 12,
+                  border: `1px solid ${T.hairline}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontFamily: FONT_SANS,
+                  fontSize: 44,
+                  fontWeight: 800,
+                  color: T.ink,
+                }}
+              >
+                1TB
+              </div>
+              <div style={{ fontFamily: FONT_SANS, fontSize: 22, color: T.muted }}>
+                画面の表示
+              </div>
+            </div>
+            <div
+              style={{
+                fontFamily: FONT_SANS,
+                fontSize: 40,
+                color: T.primary,
+                paddingBottom: 56,
+              }}
+            >
+              →
+            </div>
+            {/* 実際の容量（縮む） */}
+            <div style={{ display: 'grid', gap: 12, justifyItems: 'center' }}>
+              <div
+                style={{
+                  width: 200,
+                  height: 160,
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  justifyContent: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    width: 200,
+                    height: 160 * shrink,
+                    background: T.levelHighBg,
+                    border: `2px solid ${T.levelHighBorder}`,
+                    borderRadius: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: FONT_SANS,
+                    fontSize: 26,
+                    fontWeight: 800,
+                    color: T.levelHighFg,
+                    opacity: realOpacity,
+                  }}
+                >
+                  240GB
+                </div>
+              </div>
+              <div
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: 22,
+                  color: T.levelHighFg,
+                  fontWeight: 700,
+                  opacity: realOpacity,
+                }}
+              >
+                実際に使える容量
+              </div>
+            </div>
+          </div>
+        </Rise>
+      </div>
+      <Caption>「1TB」と表示され、書き込みも正常に終わる</Caption>
+    </Stage>
+  );
+};
+
+// 4: なぜ作ったか（自衛隊・自治体）
+const S4: React.FC = () => {
+  const facts = [
+    {
+      big: '50台以上',
+      lead: '陸上自衛隊',
+      note: '機密を扱う端末が、ウイルス入りの偽装品に約1年間つながれていた',
+    },
+    {
+      big: '全国調査へ',
+      lead: '総務省',
+      note: '自治体のUSB利用実態を調べる方向で検討',
+    },
+  ];
+  return (
+    <Stage dark>
+      <div style={{ display: 'grid', gap: 44, justifyItems: 'center' }}>
+        <Rise>
+          <div
+            style={{
+              fontFamily: FONT_SANS,
+              fontSize: 46,
+              fontWeight: 800,
+              color: T.onDark,
+              textAlign: 'center',
+              lineHeight: 1.4,
+            }}
+          >
+            買う人の問題では、なかった。
+          </div>
+        </Rise>
+        <div style={{ display: 'flex', gap: 34 }}>
+          {facts.map((f, i) => (
+            <Rise key={f.big} delay={16 + i * 14} distance={34}>
+              <div
+                style={{
+                  width: 560,
+                  padding: '40px 38px',
+                  borderRadius: 18,
+                  border: `1px solid ${T.onDarkSoft}44`,
+                  display: 'grid',
+                  gap: 14,
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: FONT_SANS,
+                    fontSize: 20,
+                    fontWeight: 700,
+                    letterSpacing: '0.14em',
+                    color: T.primary,
+                  }}
+                >
+                  {f.lead}
+                </div>
+                <div
+                  style={{
+                    fontFamily: FONT_SANS,
+                    fontSize: 54,
+                    fontWeight: 800,
+                    color: T.onDark,
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  {f.big}
+                </div>
+                <div
+                  style={{
+                    fontFamily: FONT_SANS,
+                    fontSize: 21,
+                    color: T.onDarkSoft,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {f.note}
+                </div>
+              </div>
+            </Rise>
+          ))}
+        </div>
+        <Rise delay={52}>
+          <div
+            style={{
+              fontFamily: FONT_SANS,
+              fontSize: 26,
+              color: T.onDarkSoft,
+              textAlign: 'center',
+            }}
+          >
+            だから、買う前に確かめる道具をつくりました。
+          </div>
+        </Rise>
+      </div>
+      <Caption onDark>出典: 日本経済新聞（2026年7月10日）ほか</Caption>
+    </Stage>
+  );
+};
+
+// 5: ブランド提示
+const S5: React.FC = () => {
   const frame = useCurrentFrame();
   const line = interpolate(frame, [10, 34], [0, 460], {
     extrapolateLeft: 'clamp',
@@ -143,8 +350,8 @@ const S3: React.FC = () => {
   );
 };
 
-// 4: 貼り付ける
-const S4: React.FC = () => (
+// 6: 貼り付ける
+const S6: React.FC = () => (
   <Stage>
     <div style={{ display: 'grid', gap: 34, justifyItems: 'center' }}>
       <Rise>
@@ -161,8 +368,8 @@ const S4: React.FC = () => (
   </Stage>
 );
 
-// 5: 何を見ているか（確認ポイント）
-const S5: React.FC = () => {
+// 7: 何を見ているか（確認ポイント）
+const S7: React.FC = () => {
   const items = [
     '所在地は日本国外ではないか',
     '店舗名は日本語なのに、責任者名はローマ字表記ではないか',
@@ -218,8 +425,8 @@ const S5: React.FC = () => {
   );
 };
 
-// 6: 3段階の確認レベル
-const S6: React.FC = () => {
+// 8: 3段階の確認レベル
+const S8: React.FC = () => {
   const levels = [
     { label: '要確認', note: '確認したい点が複数あります', c: T.levelHighFg, bg: T.levelHighBg, b: T.levelHighBorder },
     { label: '追加確認', note: 'もう一歩の確認を', c: '#6f540a', bg: '#faf3da', b: '#d4a017' },
@@ -277,8 +484,8 @@ const S6: React.FC = () => {
   );
 };
 
-// 7: 3つの入口
-const S7: React.FC = () => {
+// 9: 3つの入口
+const S9: React.FC = () => {
   const ways = [
     { n: '01', t: '貼り付ける', s: 'ブラウザで3秒' },
     { n: '02', t: 'ブックマークレット', s: '商品ページで1クリック' },
@@ -339,8 +546,8 @@ const S7: React.FC = () => {
   );
 };
 
-// 8: 無料・プライバシー
-const S8: React.FC = () => (
+// 10: 無料・プライバシー
+const S10: React.FC = () => (
   <Stage dark>
     <div style={{ display: 'grid', gap: 34, justifyItems: 'center' }}>
       <Rise>
@@ -399,8 +606,8 @@ const S8: React.FC = () => (
   </Stage>
 );
 
-// 9: 締め
-const S9: React.FC = () => (
+// 11: 締め
+const S11: React.FC = () => (
   <Stage>
     <div style={{ display: 'grid', gap: 28, justifyItems: 'center' }}>
       <Rise>
@@ -434,7 +641,7 @@ const S9: React.FC = () => (
   </Stage>
 );
 
-const SCENE_COMPONENTS = [S1, S2, S3, S4, S5, S6, S7, S8, S9];
+const SCENE_COMPONENTS = [S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11];
 
 export const PochimaeHowTo: React.FC = () => (
   <AbsoluteFill style={{ background: T.canvas }}>

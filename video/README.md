@@ -2,7 +2,7 @@
 
 Remotion + Google Cloud TTS で作る60秒の紹介動画。
 
-- 映像: `src/Pochimae.tsx`（1920×1080 / 30fps / 63.4秒）
+- 映像: `src/Pochimae.tsx`（1920×1080 / 30fps / 80.7秒・11シーン）
 - ナレーション台本: `narration/scene-NN.txt`
 - 音声生成: Google Cloud TTS（`ja-JP-Chirp3-HD-Charon`、ADC認証）
 - 素材: `assets/`（本番サイトの実画面をPlaywrightで撮影）
