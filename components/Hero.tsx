@@ -11,6 +11,11 @@ export default function Hero() {
         <span className="inline-block">ポチる前に、</span>
         <span className="inline-block">販売元を3秒チェック。</span>
       </p>
+      <p className="text-sm text-body max-w-md mx-auto leading-relaxed mb-2">
+        <span className="inline-block">ネット通販では、</span>
+        <span className="inline-block">「誰が売っているか」まで</span>
+        <span className="inline-block">確認していますか？</span>
+      </p>
       <p className="text-sm text-muted max-w-md mx-auto leading-relaxed">
         <span className="inline-block">Amazonで見落としがちな「販売元」を、</span>
         <span className="inline-block">購入前に確認するためのツールです。</span>

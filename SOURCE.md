@@ -80,18 +80,18 @@ components/                   Hero / ManualGuide / SellerTextForm / ResultCard /
 すべての施策・コピーは「ネット通販では『誰が売っているか』まで確認していますか？」を軸にする。
 偽装USB報道は「開発のきっかけ」として控えめに触れるに留める（ニュースの寿命に依存しない）。
 
-## Phase 2-0: 共通基盤（最初に着手・全施策の土台）
+## Phase 2-0: 共通基盤（✅ 完了 2026-07-10）
 
-1. **プリフィル入口（URLフラグメント）** — `https://pochimae.vercel.app/#s=<encodeURIComponent(販売元テキスト)>` を開くと
-   貼り付け欄に自動投入→自動チェック。`#` フラグメントはサーバーに送信されないため「URL・テキストをサーバーログに残さない」設計を維持できる。
-   ブックマークレット／iPhone共有シート／Chrome拡張の3つがすべてこの1本に乗る。
-2. **LPコピー修正** — 事件前面→習慣軸へ。ヒーロー直下に「ネット通販では『誰が売っているか』まで確認していますか？」。
+1. **プリフィル入口（URLフラグメント）** ✅ — `/#s=<販売元テキスト>&u=<商品URL>` で自動投入→自動チェック（`lib/prefill.ts`）。
+   フラグメントはサーバーに送信されないため「サーバーログに残さない」設計を維持。読み取り後はアドレスバーからも消去。
+2. **LPコピー修正** ✅ — ヒーローに「ネット通販では、『誰が売っているか』まで確認していますか？」を追加（習慣軸）。
 
-## Phase 2-1: ブックマークレット ★★★★★（審査不要・即日リリース可能）
+## Phase 2-1: ブックマークレット ★★★★★（✅ 完了 2026-07-10）
 
-- Amazon商品ページのDOMから販売元名・セラーID・出荷元を抽出し、`#s=` 付きでポチマエを開くJS。貼り付け30秒→3秒。
-- 導入ページ `/bookmarklet` を新設（ドラッグ登録の手順、スマホSafariでの登録手順）。
-- 検証: 実際のAmazon商品ページ（直販/FBA/海外セラー）3パターンで動作確認。
+- ✅ 商品ページのDOM（商品名/ブランド/出荷元/販売元）＋**セラープロフィールを同一オリジンfetch**して特商法ブロックまで自動取得し、`#s=`でポチマエを開く（`lib/bookmarklet.ts`）。貼り付け30秒→3秒。
+- ✅ 導入ページ `/bookmarklet`（PC=ドラッグ登録、スマホ=コードコピー→ブックマークURL置換）。トップからリンク。
+- ✅ 検証: 実Amazon商品ページ（VASTDIGI/FBA海外セラー）でE2E確認 — 特商法・運営責任者・CN住所まで取得し🔴判定、電話番号はマスク。
+- 残タスク: 直販・国内セラーの商品ページでの実地確認（パターン追加）。
 
 ## Phase 2-3: iPhone共有シート ★★★★★（審査不要 — Chrome拡張より前倒し推奨）
 
@@ -234,13 +234,15 @@ export default function RootLayout({
 ```tsx
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import Hero from "@/components/Hero";
 import ManualGuide from "@/components/ManualGuide";
 import SellerTextForm from "@/components/SellerTextForm";
 import ResultCard from "@/components/ResultCard";
 import { guessCategoryFromUrl } from "@/lib/categoryGuess";
 import { redactPhoneLike } from "@/lib/parseSellerText";
+import { parsePrefillHash } from "@/lib/prefill";
 import type { CategoryRisk, CheckRequest, CheckResult } from "@/lib/types";
 
 export default function Home() {
@@ -248,7 +250,9 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CheckResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [prefillText, setPrefillText] = useState<string | undefined>(undefined);
   const resultRef = useRef<HTMLDivElement>(null);
+  const prefillDone = useRef(false);
 
   // The product URL stays in the browser — used only to guess the category.
   const categoryRisk: CategoryRisk = url ? guessCategoryFromUrl(url) : null;
@@ -287,15 +291,36 @@ export default function Home() {
     }
   }
 
-  function handleCheck(sellerText: string) {
+  function handleCheck(sellerText: string, categoryOverride?: CategoryRisk) {
     // Phone-like strings are masked in the browser before anything is sent.
     const { text, found } = redactPhoneLike(sellerText);
     void runCheck({
       sellerText: text,
-      categoryRisk,
+      categoryRisk: categoryOverride !== undefined ? categoryOverride : categoryRisk,
       hasPhoneLikeInfoFromClient: found,
     });
   }
+
+  // Bookmarklet / share-sheet entry: #s=<seller text>&u=<product url>.
+  // The fragment never reaches the server; it is read here, shown in the
+  // form, checked automatically, and removed from the address bar.
+  useEffect(() => {
+    if (prefillDone.current) return;
+    prefillDone.current = true;
+    const { sellerText, url: prefillUrl } = parsePrefillHash(
+      window.location.hash,
+    );
+    if (!sellerText) return;
+    const { text: redacted } = redactPhoneLike(sellerText);
+    setPrefillText(redacted);
+    if (prefillUrl) setUrl(prefillUrl);
+    handleCheck(
+      sellerText,
+      prefillUrl ? guessCategoryFromUrl(prefillUrl) : null,
+    );
+    window.history.replaceState(null, "", window.location.pathname);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex flex-col flex-1">
@@ -305,6 +330,7 @@ export default function Home() {
         <SellerTextForm
           loading={loading}
           hasResult={result !== null}
+          prefillText={prefillText}
           onCheck={handleCheck}
           onClear={() => {
             setResult(null);
@@ -335,6 +361,14 @@ export default function Home() {
               categoryRisk={categoryRisk}
             />
           </details>
+          <p className="max-w-xl mx-auto mt-4">
+            <Link
+              href="/bookmarklet"
+              className="text-sm font-medium text-primary-active hover:text-ink transition-colors"
+            >
+              ⚡ 貼り付け不要の1クリック版（ブックマークレット）はこちら
+            </Link>
+          </p>
         </section>
 
         {error && (
@@ -451,6 +485,120 @@ button:not(:disabled) {
   html {
     scroll-behavior: auto;
   }
+}
+```
+
+## `app/bookmarklet/page.tsx`
+
+```tsx
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { BOOKMARKLET_CODE } from "@/lib/bookmarklet";
+
+export default function BookmarkletPage() {
+  const linkRef = useRef<HTMLAnchorElement>(null);
+  const [copied, setCopied] = useState(false);
+
+  // React blocks javascript: URLs in JSX, so the bookmarklet href is
+  // assigned imperatively. The code itself is a static constant.
+  useEffect(() => {
+    linkRef.current?.setAttribute("href", BOOKMARKLET_CODE);
+  }, []);
+
+  async function copyCode() {
+    await navigator.clipboard.writeText(BOOKMARKLET_CODE);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <div className="flex flex-col flex-1">
+      <main className="flex-1 w-full px-5 py-12">
+        <div className="max-w-xl mx-auto">
+          <p className="text-xs font-bold tracking-[0.2em] text-primary-active mb-3">
+            POCHIMAE BOOKMARKLET
+          </p>
+          <h1 className="font-bold text-2xl text-ink mb-3">
+            <span className="inline-block">1クリックで、</span>
+            <span className="inline-block">販売元チェック。</span>
+          </h1>
+          <p className="text-sm text-body leading-relaxed mb-8">
+            <span className="inline-block">Amazonの商品ページでこのブックマークを押すと、</span>
+            <span className="inline-block">販売元情報を自動で集めて</span>
+            <span className="inline-block">ポチマエのチェック結果を開きます。</span>
+            <span className="inline-block">貼り付け作業は不要です。</span>
+          </p>
+
+          <div className="bg-surface-card rounded-xl p-6 sm:p-8 mb-6">
+            <h2 className="font-bold text-lg text-ink mb-4">
+              パソコンでの登録（ドラッグするだけ）
+            </h2>
+            <p className="text-sm text-body leading-relaxed mb-4">
+              下のボタンを、ブラウザの<strong>ブックマークバーにドラッグ</strong>してください。
+              あとはAmazonの商品ページで押すだけです。
+            </p>
+            <a
+              ref={linkRef}
+              onClick={(e) => e.preventDefault()}
+              className="inline-block h-11 leading-[44px] px-6 rounded-lg bg-primary text-on-primary text-sm font-medium cursor-grab select-none"
+              title="このボタンをブックマークバーへドラッグ"
+            >
+              ✓ ポチマエでチェック
+            </a>
+            <p className="text-xs text-muted mt-2">
+              ※クリックしても動きません。ドラッグして登録してください。
+            </p>
+          </div>
+
+          <div className="bg-surface-card rounded-xl p-6 sm:p-8 mb-6">
+            <h2 className="font-bold text-lg text-ink mb-4">
+              スマホ（Safari / Chrome）での登録
+            </h2>
+            <ol className="space-y-3 text-sm text-body leading-relaxed list-decimal list-inside mb-4">
+              <li>下の「コードをコピー」を押す</li>
+              <li>このページをいったんブックマークに追加する</li>
+              <li>
+                ブックマークの編集画面を開き、URL欄を
+                <strong>コピーしたコードに置き換えて保存</strong>する
+              </li>
+              <li>Amazonの商品ページで、そのブックマークを開く</li>
+            </ol>
+            <button
+              type="button"
+              onClick={copyCode}
+              className="h-11 px-6 rounded-lg bg-primary text-on-primary text-sm font-medium hover:bg-primary-active transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-active"
+            >
+              {copied ? "コピーしました ✓" : "コードをコピー"}
+            </button>
+            <textarea
+              readOnly
+              value={BOOKMARKLET_CODE}
+              rows={4}
+              aria-label="ブックマークレットのコード"
+              onFocus={(e) => e.target.select()}
+              className="w-full mt-4 rounded-lg border border-hairline bg-white text-muted text-xs p-3 font-mono break-all"
+            />
+          </div>
+
+          <div className="border border-hairline rounded-xl p-5 mb-8">
+            <h2 className="text-sm font-medium text-ink mb-2">プライバシー</h2>
+            <p className="text-xs text-muted leading-relaxed">
+              集めた販売元情報はURLの「#」以降に載せて渡します。「#」以降はブラウザの仕様上サーバーへ送信されないため、商品URLや販売元情報がポチマエのサーバーログに残ることはありません。電話番号らしき文字列は、チェック前にブラウザ内で自動的にマスクされます。
+            </p>
+          </div>
+
+          <Link
+            href="/"
+            className="text-sm text-primary-active hover:text-ink transition-colors"
+          >
+            ← ポチマエに戻る
+          </Link>
+        </div>
+      </main>
+    </div>
+  );
 }
 ```
 
@@ -616,6 +764,73 @@ export interface CritiquePayload {
 }
 ```
 
+## `lib/prefill.ts`
+
+```ts
+// Prefill entry point for the bookmarklet / share sheet / extension.
+// Data arrives in the URL fragment (#s=<seller text>&u=<product url>),
+// which the browser never sends to the server — the no-server-logs
+// privacy design holds even for one-tap flows.
+
+export interface PrefillData {
+  sellerText?: string;
+  url?: string;
+}
+
+const MAX_PREFILL_LENGTH = 10_000;
+
+export function parsePrefillHash(hash: string): PrefillData {
+  const raw = hash.startsWith('#') ? hash.slice(1) : hash;
+  if (!raw) return {};
+  let params: URLSearchParams;
+  try {
+    params = new URLSearchParams(raw);
+  } catch {
+    return {};
+  }
+  const sellerText = params.get('s')?.trim().slice(0, MAX_PREFILL_LENGTH);
+  const url = params.get('u')?.trim();
+  return {
+    sellerText: sellerText || undefined,
+    url: url || undefined,
+  };
+}
+```
+
+## `lib/bookmarklet.ts`
+
+```ts
+// Bookmarklet source. Runs on an Amazon product page: collects the
+// offer block (出荷元/販売元), then fetches the seller profile page
+// (same-origin on amazon.co.jp) to grab the 特定商取引法 block, and
+// opens Pochimae with everything in the URL fragment (#s=...&u=...).
+// The fragment never reaches the server, so the privacy design holds.
+
+export const SITE_ORIGIN = 'https://pochimae.vercel.app';
+
+export const BOOKMARKLET_CODE =
+  `javascript:void(async()=>{try{` +
+  `const q=s=>document.querySelector(s);` +
+  `const t=e=>e?e.innerText.trim():'';` +
+  `const p=[];` +
+  `const title=t(q('#productTitle'));if(title)p.push('商品名: '+title);` +
+  `const b=t(q('#bylineInfo'));if(b)p.push('ブランド表記: '+b);` +
+  `const f=t(q('#fulfillerInfoFeature_feature_div'));if(f)p.push(f);` +
+  `const m=t(q('#merchantInfoFeature_feature_div'));if(m)p.push(m);` +
+  `const a=q('#sellerProfileTriggerId');` +
+  `if(a)p.push('販売元: '+a.textContent.trim());` +
+  `if(a&&a.getAttribute('href')){try{` +
+  `const r=await fetch(new URL(a.getAttribute('href'),location.origin),{credentials:'include'});` +
+  `const d=new DOMParser().parseFromString(await r.text(),'text/html');` +
+  `const s=d.querySelector('#page-section-detail-seller-info')||d.querySelector('#seller-profile-container');` +
+  `if(s)p.push(s.innerText.trim());` +
+  `}catch(e){}}` +
+  `const x=p.join('\\n').slice(0,9000);` +
+  `if(!x){alert('Amazonの商品ページで実行してください');return}` +
+  `open('${SITE_ORIGIN}/#s='+encodeURIComponent(x)+'&u='+encodeURIComponent(location.origin+location.pathname),'_blank')` +
+  `}catch(e){alert('ポチマエ: 情報を取得できませんでした')}})()`;
+```
+
 ## `lib/parseSellerText.ts`
 
 ```ts
@@ -752,7 +967,7 @@ export function parseSellerText(
 
   const storeName = extractLabeled(text, /店舗名[:：]?\s*(.+)/);
   const operatorName = extractLabeled(text, /運営責任者名?[:：]?\s*(.+)/);
-  const businessName = extractLabeled(text, /正式名称[:：]?\s*(.+)/);
+  const businessName = extractLabeled(text, /(?:正式名称|販売業者)[:：]?\s*(.+)/);
   const address = extractAddress(text);
 
   const soldByAmazon =
@@ -1117,6 +1332,11 @@ export default function Hero() {
         <span className="inline-block">ポチる前に、</span>
         <span className="inline-block">販売元を3秒チェック。</span>
       </p>
+      <p className="text-sm text-body max-w-md mx-auto leading-relaxed mb-2">
+        <span className="inline-block">ネット通販では、</span>
+        <span className="inline-block">「誰が売っているか」まで</span>
+        <span className="inline-block">確認していますか？</span>
+      </p>
       <p className="text-sm text-muted max-w-md mx-auto leading-relaxed">
         <span className="inline-block">Amazonで見落としがちな「販売元」を、</span>
         <span className="inline-block">購入前に確認するためのツールです。</span>
@@ -1237,11 +1457,12 @@ export default function ManualGuide({ url, onUrlChange, categoryRisk }: Props) {
 ```tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
   loading: boolean;
   hasResult: boolean;
+  prefillText?: string;
   onCheck: (sellerText: string) => void;
   onClear: () => void;
 };
@@ -1249,10 +1470,17 @@ type Props = {
 export default function SellerTextForm({
   loading,
   hasResult,
+  prefillText,
   onCheck,
   onClear,
 }: Props) {
   const [text, setText] = useState("");
+
+  // Bookmarklet / share-sheet entry: show the received text in the box
+  // so the user sees exactly what is being checked.
+  useEffect(() => {
+    if (prefillText) setText(prefillText);
+  }, [prefillText]);
 
   return (
     <section className="px-5 mb-6">
@@ -1623,6 +1851,43 @@ describe('sanitizeCritique', () => {
     expect(sanitizeCritique('```json\n{"a":1}\n```')).toBeUndefined();
     expect(sanitizeCritique('{"signal":"high"}')).toBeUndefined();
     expect(sanitizeCritique('[{"signal":"high"}]')).toBeUndefined();
+  });
+});
+```
+
+## `lib/__tests__/prefill.test.ts`
+
+```ts
+import { describe, expect, it } from 'vitest';
+import { parsePrefillHash } from '../prefill';
+
+describe('parsePrefillHash', () => {
+  it('parses seller text and url from the fragment', () => {
+    const text = '店舗名: 毎日上向き\n住所: 江西省吉安市';
+    const url = 'https://www.amazon.co.jp/dp/B0H5HKHQSJ';
+    const hash = `#s=${encodeURIComponent(text)}&u=${encodeURIComponent(url)}`;
+    expect(parsePrefillHash(hash)).toEqual({ sellerText: text, url });
+  });
+
+  it('returns empty object for missing or empty hash', () => {
+    expect(parsePrefillHash('')).toEqual({});
+    expect(parsePrefillHash('#')).toEqual({});
+    expect(parsePrefillHash('#foo=bar')).toEqual({
+      sellerText: undefined,
+      url: undefined,
+    });
+  });
+
+  it('caps overly long seller text', () => {
+    const hash = `#s=${encodeURIComponent('あ'.repeat(20000))}`;
+    expect(parsePrefillHash(hash).sellerText?.length).toBe(10000);
+  });
+
+  it('works without the leading #', () => {
+    expect(parsePrefillHash('s=hello')).toEqual({
+      sellerText: 'hello',
+      url: undefined,
+    });
   });
 });
 ```

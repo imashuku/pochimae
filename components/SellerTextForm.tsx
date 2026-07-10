@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
   loading: boolean;
   hasResult: boolean;
+  prefillText?: string;
   onCheck: (sellerText: string) => void;
   onClear: () => void;
 };
@@ -12,10 +13,17 @@ type Props = {
 export default function SellerTextForm({
   loading,
   hasResult,
+  prefillText,
   onCheck,
   onClear,
 }: Props) {
   const [text, setText] = useState("");
+
+  // Bookmarklet / share-sheet entry: show the received text in the box
+  // so the user sees exactly what is being checked.
+  useEffect(() => {
+    if (prefillText) setText(prefillText);
+  }, [prefillText]);
 
   return (
     <section className="px-5 mb-6">

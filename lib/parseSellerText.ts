@@ -131,7 +131,7 @@ export function parseSellerText(
 
   const storeName = extractLabeled(text, /店舗名[:：]?\s*(.+)/);
   const operatorName = extractLabeled(text, /運営責任者名?[:：]?\s*(.+)/);
-  const businessName = extractLabeled(text, /正式名称[:：]?\s*(.+)/);
+  const businessName = extractLabeled(text, /(?:正式名称|販売業者)[:：]?\s*(.+)/);
   const address = extractAddress(text);
 
   const soldByAmazon =
