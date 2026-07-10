@@ -411,7 +411,14 @@ const S4: React.FC = () => {
     {
       big: '50台以上',
       lead: '陸上自衛隊',
-      note: '機密を扱う端末が、ウイルス入りの偽装品に約1年間つながれていた',
+      // 「約1年間」は単位表現。行末で「約1年 / 間」に割らせない
+      note: (
+        <>
+          機密を扱う端末が、ウイルス入りの偽装品に
+          <span style={{ whiteSpace: 'nowrap' }}>約1年間</span>
+          つながれていた
+        </>
+      ),
     },
     {
       big: '全国調査へ',
@@ -492,6 +499,7 @@ const S4: React.FC = () => {
                     fontSize: 21,
                     color: T.onDarkSoft,
                     lineHeight: 1.6,
+                    wordBreak: 'keep-all',
                   }}
                 >
                   {f.note}
@@ -611,7 +619,9 @@ const S7: React.FC = () => {
                       width: 24,
                       height: 24,
                       borderRadius: 99,
-                      background: T.surfaceCard,
+                      // 白地に載せる。surfaceCard 地だとコントラスト4.19でAAに届かない
+                      background: '#ffffff',
+                      border: `1px solid ${T.hairline}`,
                       color: T.primaryActive,
                       fontFamily: FONT_SANS,
                       fontSize: 14,
@@ -699,12 +709,13 @@ const S7B: React.FC = () => {
               <div
                 style={{
                   fontFamily: FONT_SANS,
-                  fontSize: 17,
+                  // 19px bold = WCAGの「大きな文字」枠。17pxだと通常文字扱いでAA未達になる
+                  fontSize: 19,
                   fontWeight: 700,
                   letterSpacing: '0.08em',
                   color: T.onPrimary,
                   background: T.primary,
-                  padding: '6px 14px',
+                  padding: '7px 15px',
                   borderRadius: 999,
                 }}
               >
@@ -949,11 +960,12 @@ const S11: React.FC = () => (
               display: 'flex',
             }}
           >
-            {/* 264px = QR素材の実寸。縮小するとモジュールが潰れて読み取れなくなる */}
+            {/* 296px = QR素材の実寸。縮小するとモジュールが潰れて読み取れなくなる。
+                素材側に4モジュール分のクワイエットゾーンを焼き込んである */}
             <img
               src={A('qr-pochimae.png')}
-              width={264}
-              height={264}
+              width={296}
+              height={296}
               style={{ display: 'block', imageRendering: 'pixelated' }}
               alt=""
             />
