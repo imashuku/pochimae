@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "プライバシーポリシー｜ポチマエ",
+  title: "プライバシーポリシー｜ダレウリ",
   description:
-    "ポチマエおよびChrome拡張機能「ポチマエ — Amazon販売元チェック」における個人情報・利用者情報の取り扱いについて。",
+    "ダレウリおよびChrome拡張機能「ダレウリ — Amazon販売元チェック」における個人情報・利用者情報の取り扱いについて。",
 };
 
 export default function PrivacyPage() {
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
           <div className="space-y-8 text-sm text-body leading-relaxed">
             <section>
               <p>
-                ステップアウトマーケティング合同会社（以下「当社」）は、当社が提供するウェブサービス「ポチマエ」（https://pochimae.vercel.app、以下「本サービス」）およびChrome拡張機能「ポチマエ
+                ステップアウトマーケティング合同会社（以下「当社」）は、当社が提供するウェブサービス「ダレウリ」（https://dareuri.app、以下「本サービス」）およびChrome拡張機能「ダレウリ
                 — Amazon販売元チェック」（以下「本拡張機能」）における利用者情報の取り扱いを、以下のとおり定めます。
               </p>
             </section>
@@ -116,7 +116,7 @@ export default function PrivacyPage() {
               href="/"
               className="text-sm text-primary-active hover:text-ink transition-colors"
             >
-              ← ポチマエに戻る
+              ← ダレウリに戻る
             </Link>
           </p>
         </div>

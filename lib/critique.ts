@@ -34,7 +34,7 @@ export function sanitizeCritique(raw: string): string | undefined {
   return text;
 }
 
-const SYSTEM_PROMPT = `あなたは「ポチマエ」というAmazon販売元チェックツールの講評担当です。
+const SYSTEM_PROMPT = `あなたは「ダレウリ」というAmazon販売元チェックツールの講評担当です。
 入力として、販売元情報から抽出した特徴量（JSON）を受け取ります。生活者向けの講評文を生成してください。
 
 制約:

@@ -963,7 +963,7 @@ const S11: React.FC = () => (
             {/* 296px = QR素材の実寸。縮小するとモジュールが潰れて読み取れなくなる。
                 素材側に4モジュール分のクワイエットゾーンを焼き込んである */}
             <img
-              src={A('qr-pochimae.png')}
+              src={A('qr-dareuri.png')}
               width={296}
               height={296}
               style={{ display: 'block', imageRendering: 'pixelated' }}
@@ -982,7 +982,7 @@ const S11: React.FC = () => (
                 borderRadius: 14,
               }}
             >
-              pochimae.vercel.app
+              dareuri.app
             </div>
             <div style={{ fontFamily: FONT_SANS, fontSize: 21, color: T.muted }}>
               無料・登録不要。QRからすぐ開けます。
@@ -1002,7 +1002,7 @@ const S11: React.FC = () => (
 // 並び順が音声 scene-NN.wav と theme.ts の SCENES に対応する。増減時は3つとも直すこと。
 const SCENE_COMPONENTS = [S1, S2, S3, S4, S5, S6, S7, S7B, S8, S9, S10, S11];
 
-export const PochimaeHowTo: React.FC = () => (
+export const DareuriHowTo: React.FC = () => (
   <AbsoluteFill style={{ background: T.canvas }}>
     {SCENE_COMPONENTS.map((C, i) => {
       const id = i + 1;

@@ -5,7 +5,7 @@ export default function Hero() {
         AMAZON 販売元チェック
       </p>
       <h1 className="font-display font-bold text-4xl sm:text-5xl text-ink mb-4">
-        ポチマエ
+        ダレウリ
       </h1>
       <p className="font-bold text-lg sm:text-xl text-ink mb-3">
         <span className="inline-block">ポチる前に、</span>

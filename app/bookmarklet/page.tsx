@@ -25,7 +25,7 @@ export default function BookmarkletPage() {
       <main className="flex-1 w-full px-5 py-12">
         <div className="max-w-xl mx-auto">
           <p className="text-xs font-bold tracking-[0.2em] text-primary-active mb-3">
-            POCHIMAE BOOKMARKLET
+            DAREURI BOOKMARKLET
           </p>
           <h1 className="font-bold text-2xl text-ink mb-3">
             <span className="inline-block">1クリックで、</span>
@@ -34,7 +34,7 @@ export default function BookmarkletPage() {
           <p className="text-sm text-body leading-relaxed mb-8">
             <span className="inline-block">Amazonの商品ページでこのブックマークを押すと、</span>
             <span className="inline-block">販売元情報を自動で集めて</span>
-            <span className="inline-block">ポチマエのチェック結果を開きます。</span>
+            <span className="inline-block">ダレウリのチェック結果を開きます。</span>
             <span className="inline-block">貼り付け作業は不要です。</span>
           </p>
 
@@ -52,7 +52,7 @@ export default function BookmarkletPage() {
               className="inline-block h-11 leading-[44px] px-6 rounded-lg bg-primary text-on-primary text-sm font-medium cursor-grab select-none"
               title="このボタンをブックマークバーへドラッグ"
             >
-              ✓ ポチマエでチェック
+              ✓ ダレウリでチェック
             </a>
             <p className="text-xs text-muted mt-2">
               ※クリックしても動きません。ドラッグして登録してください。
@@ -92,7 +92,7 @@ export default function BookmarkletPage() {
           <div className="border border-hairline rounded-xl p-5 mb-8">
             <h2 className="text-sm font-medium text-ink mb-2">プライバシー</h2>
             <p className="text-xs text-muted leading-relaxed">
-              集めた販売元情報はURLの「#」以降に載せて渡します。「#」以降はブラウザの仕様上サーバーへ送信されないため、商品URLや販売元情報がポチマエのサーバーログに残ることはありません。電話番号らしき文字列は、チェック前にブラウザ内で自動的にマスクされます。
+              集めた販売元情報はURLの「#」以降に載せて渡します。「#」以降はブラウザの仕様上サーバーへ送信されないため、商品URLや販売元情報がダレウリのサーバーログに残ることはありません。電話番号らしき文字列は、チェック前にブラウザ内で自動的にマスクされます。
             </p>
           </div>
 
@@ -100,7 +100,7 @@ export default function BookmarkletPage() {
             href="/"
             className="text-sm text-primary-active hover:text-ink transition-colors"
           >
-            ← ポチマエに戻る
+            ← ダレウリに戻る
           </Link>
         </div>
       </main>

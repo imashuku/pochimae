@@ -39,4 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-pochimae-extension-v0.1.0.zip
+dareuri-extension-v*.zip
+
+# 素材生成の中間ファイル
+scripts/.tmp/

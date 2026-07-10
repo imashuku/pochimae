@@ -1,5 +1,5 @@
 {
-  "name": "pochimae-video",
+  "name": "dareuri-video",
   "version": "1.0.0",
   "description": "My Remotion video",
   "repository": {},
@@ -29,7 +29,7 @@
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
-    "render": "remotion render PochimaeHowTo out/pochimae-howto.mp4"
+    "render": "remotion render DareuriHowTo out/dareuri-howto.mp4"
   },
   "sideEffects": [
     "*.css"

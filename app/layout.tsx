@@ -10,7 +10,7 @@ const notoSansJP = Noto_Sans_JP({
   preload: false,
 });
 
-// ロゴ「ポチマエ」専用。UI見出しには使わない（見出しはNoto Sans JP太字）
+// ロゴ「ダレウリ」専用。UI見出しには使わない（見出しはNoto Sans JP太字）
 const shipporiMincho = Shippori_Mincho({
   weight: ["700"],
   variable: "--font-shippori-mincho",
@@ -20,7 +20,7 @@ const shipporiMincho = Shippori_Mincho({
 });
 
 export const metadata: Metadata = {
-  title: "ポチマエ｜ポチる前に、販売元を3秒チェック。",
+  title: "ダレウリ｜ポチる前に、販売元を3秒チェック。",
   description:
     "Amazonで見落としがちな「販売元」を、購入前に確認するためのツールです。販売元情報を貼り付けるだけで、購入前の確認ポイントを整理します。",
 };

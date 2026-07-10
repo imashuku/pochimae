@@ -52,7 +52,7 @@
   --color-level-low-fg: var(--level-low-fg);
   --color-level-low-border: var(--level-low-border);
   --font-sans: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", sans-serif;
-  /* font-display はロゴ「ポチマエ」専用。UI見出しには使わない */
+  /* font-display はロゴ「ダレウリ」専用。UI見出しには使わない */
   --font-display: var(--font-shippori-mincho), "Hiragino Mincho ProN", serif;
 }
 

@@ -12,6 +12,8 @@
 // 出ないことがある）。特商法ブロックまで欲しい場合は、Safari で
 // 販売元プロフィールを開いてから実行する。実機で動作確認済み。
 
+import { SITE_ORIGIN } from './brand';
+
 export const SHORTCUT_JS = `const q = (s) => document.querySelector(s);
 const t = (e) => (e ? e.innerText.trim() : "");
 const p = [];
@@ -35,7 +37,7 @@ if (sec) p.push(t(sec));
 
 const text = p.join("\\n").slice(0, 9000);
 completion(
-  "https://pochimae.vercel.app/#s=" +
+  "${SITE_ORIGIN}/#s=" +
     encodeURIComponent(text) +
     "&u=" +
     encodeURIComponent(location.origin + location.pathname)

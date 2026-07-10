@@ -1,11 +1,11 @@
-# ポチマエ — Full Source Dump (for AI review)
+# ダレウリ — Full Source Dump (for AI review)
 
-Generated from https://github.com/imashuku/pochimae.
+Generated from https://github.com/imashuku/dareuri.
 
 ## `README.md`
 
 ```md
-# ポチマエ
+# ダレウリ
 
 **ポチる前に、販売元を3秒チェック。**
 
@@ -74,9 +74,9 @@ components/                   Hero / ManualGuide / SellerTextForm / ResultCard /
 ## `ROADMAP.md`
 
 ```md
-# ポチマエ ロードマップ（Phase 2）
+# ダレウリ ロードマップ（Phase 2）
 
-方針: ポチマエは「AI診断ツール」ではなく**消費者教育** — 売る価値は「販売元を確認する習慣」。
+方針: ダレウリは「AI診断ツール」ではなく**消費者教育** — 売る価値は「販売元を確認する習慣」。
 すべての施策・コピーは「ネット通販では『誰が売っているか』まで確認していますか？」を軸にする。
 偽装USB報道は「開発のきっかけ」として控えめに触れるに留める（ニュースの寿命に依存しない）。
 
@@ -88,21 +88,21 @@ components/                   Hero / ManualGuide / SellerTextForm / ResultCard /
 
 ## Phase 2-1: ブックマークレット ★★★★★（✅ 完了 2026-07-10）
 
-- ✅ 商品ページのDOM（商品名/ブランド/出荷元/販売元）＋**セラープロフィールを同一オリジンfetch**して特商法ブロックまで自動取得し、`#s=`でポチマエを開く（`lib/bookmarklet.ts`）。貼り付け30秒→3秒。
+- ✅ 商品ページのDOM（商品名/ブランド/出荷元/販売元）＋**セラープロフィールを同一オリジンfetch**して特商法ブロックまで自動取得し、`#s=`でダレウリを開く（`lib/bookmarklet.ts`）。貼り付け30秒→3秒。
 - ✅ 導入ページ `/bookmarklet`（PC=ドラッグ登録、スマホ=コードコピー→ブックマークURL置換）。トップからリンク。
 - ✅ 検証: 実Amazon商品ページ（VASTDIGI/FBA海外セラー）でE2E確認 — 特商法・運営責任者・CN住所まで取得し🔴判定、電話番号はマスク。
 - 残タスク: 直販・国内セラーの商品ページでの実地確認（パターン追加）。
 
 ## Phase 2-3: iPhone共有シート ★★★★★（✅ 完了 2026-07-10）
 
-- ✅ Safari共有シート →「Webページの内容を取得」+「JavaScriptを実行」で販売元情報を抽出 → `#s=` でポチマエを開き自動判定（`lib/shortcut.ts`）。
+- ✅ Safari共有シート →「Webページの内容を取得」+「JavaScriptを実行」で販売元情報を抽出 → `#s=` でダレウリを開き自動判定（`lib/shortcut.ts`）。
 - ✅ 導入ページ `/shortcut`（作り方6ステップ＋コード/URLのコピーボタン）。トップからリンク。
 - ✅ 実ページ検証: 商品ページ・セラープロフィール両方で抽出成功、プロフィールから🔴判定・電話番号マスクを確認。
 - 残: 実機iPhoneでの動作確認（Playwrightでの検証は済）。iCloud共有リンクでの配布（本人が作成→リンクをページに追加）。
 
 ## Phase 2-2: Chrome拡張 ★★★★★（実装✅ 2026-07-10・審査提出待ち）
 
-- ✅ Manifest V3、`extension/`。ツールバー1クリック→販売元情報＋セラープロフィール特商法ブロックを収集→新規タブでポチマエ判定。
+- ✅ Manifest V3、`extension/`。ツールバー1クリック→販売元情報＋セラープロフィール特商法ブロックを収集→新規タブでダレウリ判定。
 - ✅ 権限は `activeTab`＋`scripting` のみ（ホスト権限・常駐スクリプトなし＝審査・プライバシー対応）。
 - ✅ E2E検証済み（実Amazonページ→🔴要確認・特商法取得・電話番号マスク）。提出用zip生成手順は `extension/README.md`。
 - ⏳ 残: Chromeデベロッパー登録（$5・ユーザー作業）→ Dashboard提出。掲載文言・権限説明はREADMEに準備済み。
@@ -135,7 +135,7 @@ components/                   Hero / ManualGuide / SellerTextForm / ResultCard /
 
 ```json
 {
-  "name": "pochimae",
+  "name": "dareuri",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -180,7 +180,7 @@ const notoSansJP = Noto_Sans_JP({
   preload: false,
 });
 
-// ロゴ「ポチマエ」専用。UI見出しには使わない（見出しはNoto Sans JP太字）
+// ロゴ「ダレウリ」専用。UI見出しには使わない（見出しはNoto Sans JP太字）
 const shipporiMincho = Shippori_Mincho({
   weight: ["700"],
   variable: "--font-shippori-mincho",
@@ -190,7 +190,7 @@ const shipporiMincho = Shippori_Mincho({
 });
 
 export const metadata: Metadata = {
-  title: "ポチマエ｜ポチる前に、販売元を3秒チェック。",
+  title: "ダレウリ｜ポチる前に、販売元を3秒チェック。",
   description:
     "Amazonで見落としがちな「販売元」を、購入前に確認するためのツールです。販売元情報を貼り付けるだけで、購入前の確認ポイントを整理します。",
 };
@@ -374,7 +374,7 @@ export default function Home() {
 
       <footer className="bg-surface-dark text-on-dark-soft px-5 py-8">
         <div className="max-w-xl mx-auto space-y-3">
-          <p className="font-display font-bold text-on-dark">ポチマエ</p>
+          <p className="font-display font-bold text-on-dark">ダレウリ</p>
           <p className="text-xs leading-relaxed">
             本ツールは、Amazon上に表示される販売元情報を整理し、購入前の確認ポイントを示すものです。商品の真贋、品質、性能、販売者の信用度を断定するものではありません。最終的な購入判断は、販売元情報、レビュー、返品条件、Amazon上の表示内容を確認したうえで行ってください。
           </p>
@@ -453,7 +453,7 @@ export default function Home() {
   --color-level-low-fg: var(--level-low-fg);
   --color-level-low-border: var(--level-low-border);
   --font-sans: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", sans-serif;
-  /* font-display はロゴ「ポチマエ」専用。UI見出しには使わない */
+  /* font-display はロゴ「ダレウリ」専用。UI見出しには使わない */
   --font-display: var(--font-shippori-mincho), "Hiragino Mincho ProN", serif;
 }
 
@@ -491,9 +491,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "プライバシーポリシー｜ポチマエ",
+  title: "プライバシーポリシー｜ダレウリ",
   description:
-    "ポチマエおよびChrome拡張機能「ポチマエ — Amazon販売元チェック」における個人情報・利用者情報の取り扱いについて。",
+    "ダレウリおよびChrome拡張機能「ダレウリ — Amazon販売元チェック」における個人情報・利用者情報の取り扱いについて。",
 };
 
 export default function PrivacyPage() {
@@ -512,7 +512,7 @@ export default function PrivacyPage() {
           <div className="space-y-8 text-sm text-body leading-relaxed">
             <section>
               <p>
-                ステップアウトマーケティング合同会社（以下「当社」）は、当社が提供するウェブサービス「ポチマエ」（https://pochimae.vercel.app、以下「本サービス」）およびChrome拡張機能「ポチマエ
+                ステップアウトマーケティング合同会社（以下「当社」）は、当社が提供するウェブサービス「ダレウリ」（https://dareuri.app、以下「本サービス」）およびChrome拡張機能「ダレウリ
                 — Amazon販売元チェック」（以下「本拡張機能」）における利用者情報の取り扱いを、以下のとおり定めます。
               </p>
             </section>
@@ -605,7 +605,7 @@ export default function PrivacyPage() {
               href="/"
               className="text-sm text-primary-active hover:text-ink transition-colors"
             >
-              ← ポチマエに戻る
+              ← ダレウリに戻る
             </Link>
           </p>
         </div>
@@ -645,7 +645,7 @@ export default function BookmarkletPage() {
       <main className="flex-1 w-full px-5 py-12">
         <div className="max-w-xl mx-auto">
           <p className="text-xs font-bold tracking-[0.2em] text-primary-active mb-3">
-            POCHIMAE BOOKMARKLET
+            DAREURI BOOKMARKLET
           </p>
           <h1 className="font-bold text-2xl text-ink mb-3">
             <span className="inline-block">1クリックで、</span>
@@ -654,7 +654,7 @@ export default function BookmarkletPage() {
           <p className="text-sm text-body leading-relaxed mb-8">
             <span className="inline-block">Amazonの商品ページでこのブックマークを押すと、</span>
             <span className="inline-block">販売元情報を自動で集めて</span>
-            <span className="inline-block">ポチマエのチェック結果を開きます。</span>
+            <span className="inline-block">ダレウリのチェック結果を開きます。</span>
             <span className="inline-block">貼り付け作業は不要です。</span>
           </p>
 
@@ -672,7 +672,7 @@ export default function BookmarkletPage() {
               className="inline-block h-11 leading-[44px] px-6 rounded-lg bg-primary text-on-primary text-sm font-medium cursor-grab select-none"
               title="このボタンをブックマークバーへドラッグ"
             >
-              ✓ ポチマエでチェック
+              ✓ ダレウリでチェック
             </a>
             <p className="text-xs text-muted mt-2">
               ※クリックしても動きません。ドラッグして登録してください。
@@ -712,7 +712,7 @@ export default function BookmarkletPage() {
           <div className="border border-hairline rounded-xl p-5 mb-8">
             <h2 className="text-sm font-medium text-ink mb-2">プライバシー</h2>
             <p className="text-xs text-muted leading-relaxed">
-              集めた販売元情報はURLの「#」以降に載せて渡します。「#」以降はブラウザの仕様上サーバーへ送信されないため、商品URLや販売元情報がポチマエのサーバーログに残ることはありません。電話番号らしき文字列は、チェック前にブラウザ内で自動的にマスクされます。
+              集めた販売元情報はURLの「#」以降に載せて渡します。「#」以降はブラウザの仕様上サーバーへ送信されないため、商品URLや販売元情報がダレウリのサーバーログに残ることはありません。電話番号らしき文字列は、チェック前にブラウザ内で自動的にマスクされます。
             </p>
           </div>
 
@@ -720,7 +720,7 @@ export default function BookmarkletPage() {
             href="/"
             className="text-sm text-primary-active hover:text-ink transition-colors"
           >
-            ← ポチマエに戻る
+            ← ダレウリに戻る
           </Link>
         </div>
       </main>
@@ -770,7 +770,7 @@ const STEPS = [
       "検索欄で「URLを開く」を追加し、URL欄に変数「JavaScriptの結果」を入れます。コード側で完成URLを組み立てるので、URLの直接入力は不要です。",
   },
   {
-    title: "名前を「ポチマエでチェック」にして完了",
+    title: "名前を「ダレウリでチェック」にして完了",
     detail:
       "アクションは全部で3つ（共有シートから受け取る／JavaScriptを実行／JavaScriptの結果を開く）になります。",
   },
@@ -790,7 +790,7 @@ export default function ShortcutPage() {
       <main className="flex-1 w-full px-5 py-12">
         <div className="max-w-xl mx-auto">
           <p className="text-xs font-bold tracking-[0.2em] text-primary-active mb-3">
-            POCHIMAE FOR IPHONE
+            DAREURI FOR IPHONE
           </p>
           <h1 className="font-bold text-2xl text-ink mb-3">
             <span className="inline-block">Safariの共有シートから、</span>
@@ -798,7 +798,7 @@ export default function ShortcutPage() {
           </h1>
           <p className="text-sm text-body leading-relaxed mb-8">
             <span className="inline-block">iPhoneのSafariでAmazonの販売元プロフィールを開き、</span>
-            <span className="inline-block">共有ボタンから「ポチマエでチェック」を選ぶだけ。</span>
+            <span className="inline-block">共有ボタンから「ダレウリでチェック」を選ぶだけ。</span>
             <span className="inline-block">貼り付け作業は不要です。</span>
           </p>
 
@@ -899,7 +899,7 @@ export default function ShortcutPage() {
           <div className="border border-hairline rounded-xl p-5 mb-8">
             <h2 className="text-sm font-medium text-ink mb-2">プライバシー</h2>
             <p className="text-xs text-muted leading-relaxed">
-              読み取った販売元情報はURLの「#」以降に載せて渡します。「#」以降はブラウザの仕様上サーバーへ送信されないため、販売元情報や商品URLがポチマエのサーバーログに残ることはありません。電話番号らしき文字列は、チェック前にブラウザ内で自動的にマスクされます。
+              読み取った販売元情報はURLの「#」以降に載せて渡します。「#」以降はブラウザの仕様上サーバーへ送信されないため、販売元情報や商品URLがダレウリのサーバーログに残ることはありません。電話番号らしき文字列は、チェック前にブラウザ内で自動的にマスクされます。
             </p>
           </div>
 
@@ -907,7 +907,7 @@ export default function ShortcutPage() {
             href="/"
             className="text-sm text-primary-active hover:text-ink transition-colors"
           >
-            ← ポチマエに戻る
+            ← ダレウリに戻る
           </Link>
         </div>
       </main>
@@ -1117,10 +1117,10 @@ export function parsePrefillHash(hash: string): PrefillData {
 // Bookmarklet source. Runs on an Amazon product page: collects the
 // offer block (出荷元/販売元), then fetches the seller profile page
 // (same-origin on amazon.co.jp) to grab the 特定商取引法 block, and
-// opens Pochimae with everything in the URL fragment (#s=...&u=...).
+// opens Dareuri with everything in the URL fragment (#s=...&u=...).
 // The fragment never reaches the server, so the privacy design holds.
 
-export const SITE_ORIGIN = 'https://pochimae.vercel.app';
+export const SITE_ORIGIN = 'https://dareuri.app';
 
 export const BOOKMARKLET_CODE =
   `javascript:void(async()=>{try{` +
@@ -1142,7 +1142,7 @@ export const BOOKMARKLET_CODE =
   `const x=p.join('\\n').slice(0,9000);` +
   `if(!x){alert('Amazonの商品ページで実行してください');return}` +
   `open('${SITE_ORIGIN}/#s='+encodeURIComponent(x)+'&u='+encodeURIComponent(location.origin+location.pathname),'_blank')` +
-  `}catch(e){alert('ポチマエ: 情報を取得できませんでした')}})()`;
+  `}catch(e){alert('ダレウリ: 情報を取得できませんでした')}})()`;
 ```
 
 ## `lib/shortcut.ts`
@@ -1185,7 +1185,7 @@ if (sec) p.push(t(sec));
 
 const text = p.join("\\n").slice(0, 9000);
 completion(
-  "https://pochimae.vercel.app/#s=" +
+  "https://dareuri.app/#s=" +
     encodeURIComponent(text) +
     "&u=" +
     encodeURIComponent(location.origin + location.pathname)
@@ -1593,7 +1593,7 @@ export function sanitizeCritique(raw: string): string | undefined {
   return text;
 }
 
-const SYSTEM_PROMPT = `あなたは「ポチマエ」というAmazon販売元チェックツールの講評担当です。
+const SYSTEM_PROMPT = `あなたは「ダレウリ」というAmazon販売元チェックツールの講評担当です。
 入力として、販売元情報から抽出した特徴量（JSON）を受け取ります。生活者向けの講評文を生成してください。
 
 制約:
@@ -1687,7 +1687,7 @@ export default function Hero() {
         AMAZON 販売元チェック
       </p>
       <h1 className="font-display font-bold text-4xl sm:text-5xl text-ink mb-4">
-        ポチマエ
+        ダレウリ
       </h1>
       <p className="font-bold text-lg sm:text-xl text-ink mb-3">
         <span className="inline-block">ポチる前に、</span>
@@ -2068,11 +2068,11 @@ export default function Disclaimer() {
 ```json
 {
   "manifest_version": 3,
-  "name": "ポチマエ — Amazon販売元チェック",
+  "name": "ダレウリ — Amazon販売元チェック",
   "version": "0.1.0",
-  "description": "Amazonの商品ページで1クリック。販売元情報を自動で集めて、ポチマエの確認結果を開きます。",
+  "description": "Amazonの商品ページで1クリック。販売元情報を自動で集めて、ダレウリの確認結果を開きます。",
   "action": {
-    "default_title": "ポチマエでチェック",
+    "default_title": "ダレウリでチェック",
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png",
@@ -2096,23 +2096,23 @@ export default function Disclaimer() {
 ## `extension/background.js`
 
 ```js
-// ポチマエ Chrome拡張 — service worker
+// ダレウリ Chrome拡張 — service worker
 //
 // 設計:
 // - 常駐コンテンツスクリプトなし。ツールバーのボタンを押した瞬間だけ、
 //   activeTab 権限で現在のタブに収集関数を注入する
 // - 収集ロジックは lib/bookmarklet.ts と同一（実Amazonページで検証済み）
-// - 収集結果は URL フラグメント (#s=...&u=...) でポチマエに渡す。
+// - 収集結果は URL フラグメント (#s=...&u=...) でダレウリに渡す。
 //   フラグメントはサーバーに送信されないため、販売元情報・商品URLが
 //   サーバーログに残ることはない
 
-const SITE_ORIGIN = "https://pochimae.vercel.app";
+const SITE_ORIGIN = "https://dareuri.app";
 
 // タブ内で実行される収集関数。シリアライズされて注入されるため自己完結。
 async function collectFromPage(siteOrigin) {
   try {
     if (!/(^|\.)amazon\.(co\.jp|com)$/.test(location.hostname)) {
-      return { ok: false, message: "ポチマエ: Amazonの商品ページで押してください" };
+      return { ok: false, message: "ダレウリ: Amazonの商品ページで押してください" };
     }
     const q = (s) => document.querySelector(s);
     const t = (e) => (e ? e.innerText.trim() : "");
@@ -2146,7 +2146,7 @@ async function collectFromPage(siteOrigin) {
       return {
         ok: false,
         message:
-          "ポチマエ: 販売元情報が見つかりませんでした。商品ページで押してください",
+          "ダレウリ: 販売元情報が見つかりませんでした。商品ページで押してください",
       };
     }
     return {
@@ -2159,7 +2159,7 @@ async function collectFromPage(siteOrigin) {
         encodeURIComponent(location.origin + location.pathname),
     };
   } catch (e) {
-    return { ok: false, message: "ポチマエ: 情報を取得できませんでした" };
+    return { ok: false, message: "ダレウリ: 情報を取得できませんでした" };
   }
 }
 
@@ -2181,7 +2181,7 @@ async function runCheck(tab) {
     await chrome.tabs.create({ url: result.url, index: tab.index + 1 });
   } else {
     const message =
-      (result && result.message) || "ポチマエ: 情報を取得できませんでした";
+      (result && result.message) || "ダレウリ: 情報を取得できませんでした";
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
@@ -2199,6 +2199,6 @@ chrome.action.onClicked.addListener((tab) => {
 });
 
 // テストから同じ経路を叩けるように公開（本番動作には影響しない）
-self.__pochimaeRunCheck = runCheck;
+self.__dareuriRunCheck = runCheck;
 ```
 

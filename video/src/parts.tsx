@@ -120,7 +120,7 @@ export const Wordmark: React.FC<{ size?: number; color?: string }> = ({
       letterSpacing: '0.04em',
     }}
   >
-    ポチマエ
+    ダレウリ
   </div>
 );
 

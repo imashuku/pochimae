@@ -2,8 +2,10 @@ from google.cloud import texttospeech
 from pathlib import Path
 import subprocess, json
 
-NARR = Path('/Users/imashukuhiroaki/workspace/pochimae/video/narration')
-AUD  = Path('/Users/imashukuhiroaki/workspace/pochimae/video/audio')
+# スクリプト位置からの相対。絶対パスを書くとリポジトリ名を変えたとき壊れる
+ROOT = Path(__file__).resolve().parent.parent
+NARR = ROOT / 'narration'
+AUD  = ROOT / 'audio'
 AUD.mkdir(exist_ok=True)
 
 client = texttospeech.TextToSpeechClient()

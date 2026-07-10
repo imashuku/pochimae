@@ -36,7 +36,7 @@ const STEPS = [
       "検索欄で「URLを開く」を追加し、URL欄に変数「JavaScriptの結果」を入れます。コード側で完成URLを組み立てるので、URLの直接入力は不要です。",
   },
   {
-    title: "名前を「ポチマエでチェック」にして完了",
+    title: "名前を「ダレウリでチェック」にして完了",
     detail:
       "アクションは全部で3つ（共有シートから受け取る／JavaScriptを実行／JavaScriptの結果を開く）になります。",
   },
@@ -56,7 +56,7 @@ export default function ShortcutPage() {
       <main className="flex-1 w-full px-5 py-12">
         <div className="max-w-xl mx-auto">
           <p className="text-xs font-bold tracking-[0.2em] text-primary-active mb-3">
-            POCHIMAE FOR IPHONE
+            DAREURI FOR IPHONE
           </p>
           <h1 className="font-bold text-2xl text-ink mb-3">
             <span className="inline-block">Safariの共有シートから、</span>
@@ -64,7 +64,7 @@ export default function ShortcutPage() {
           </h1>
           <p className="text-sm text-body leading-relaxed mb-8">
             <span className="inline-block">iPhoneのSafariでAmazonの販売元プロフィールを開き、</span>
-            <span className="inline-block">共有ボタンから「ポチマエでチェック」を選ぶだけ。</span>
+            <span className="inline-block">共有ボタンから「ダレウリでチェック」を選ぶだけ。</span>
             <span className="inline-block">貼り付け作業は不要です。</span>
           </p>
 
@@ -165,7 +165,7 @@ export default function ShortcutPage() {
           <div className="border border-hairline rounded-xl p-5 mb-8">
             <h2 className="text-sm font-medium text-ink mb-2">プライバシー</h2>
             <p className="text-xs text-muted leading-relaxed">
-              読み取った販売元情報はURLの「#」以降に載せて渡します。「#」以降はブラウザの仕様上サーバーへ送信されないため、販売元情報や商品URLがポチマエのサーバーログに残ることはありません。電話番号らしき文字列は、チェック前にブラウザ内で自動的にマスクされます。
+              読み取った販売元情報はURLの「#」以降に載せて渡します。「#」以降はブラウザの仕様上サーバーへ送信されないため、販売元情報や商品URLがダレウリのサーバーログに残ることはありません。電話番号らしき文字列は、チェック前にブラウザ内で自動的にマスクされます。
             </p>
           </div>
 
@@ -173,7 +173,7 @@ export default function ShortcutPage() {
             href="/"
             className="text-sm text-primary-active hover:text-ink transition-colors"
           >
-            ← ポチマエに戻る
+            ← ダレウリに戻る
           </Link>
         </div>
       </main>

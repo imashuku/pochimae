@@ -1,13 +1,13 @@
 import './fonts';
 import React from 'react';
 import { Composition } from 'remotion';
-import { PochimaeHowTo } from './Pochimae';
+import { DareuriHowTo } from './Dareuri';
 import { FPS, TOTAL_FRAMES } from './theme';
 
 export const RemotionRoot: React.FC = () => (
   <Composition
-    id="PochimaeHowTo"
-    component={PochimaeHowTo}
+    id="DareuriHowTo"
+    component={DareuriHowTo}
     durationInFrames={TOTAL_FRAMES}
     fps={FPS}
     width={1920}

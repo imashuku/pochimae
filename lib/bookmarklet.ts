@@ -1,10 +1,12 @@
 // Bookmarklet source. Runs on an Amazon product page: collects the
 // offer block (出荷元/販売元), then fetches the seller profile page
 // (same-origin on amazon.co.jp) to grab the 特定商取引法 block, and
-// opens Pochimae with everything in the URL fragment (#s=...&u=...).
+// opens Dareuri with everything in the URL fragment (#s=...&u=...).
 // The fragment never reaches the server, so the privacy design holds.
 
-export const SITE_ORIGIN = 'https://pochimae.vercel.app';
+// 再エクスポートだけだとローカル束縛ができず、下のテンプレート内で参照できない
+import { SITE_ORIGIN } from './brand';
+export { SITE_ORIGIN };
 
 export const BOOKMARKLET_CODE =
   `javascript:void(async()=>{try{` +
@@ -26,4 +28,4 @@ export const BOOKMARKLET_CODE =
   `const x=p.join('\\n').slice(0,9000);` +
   `if(!x){alert('Amazonの商品ページで実行してください');return}` +
   `open('${SITE_ORIGIN}/#s='+encodeURIComponent(x)+'&u='+encodeURIComponent(location.origin+location.pathname),'_blank')` +
-  `}catch(e){alert('ポチマエ: 情報を取得できませんでした')}})()`;
+  `}catch(e){alert('ダレウリ: 情報を取得できませんでした')}})()`;

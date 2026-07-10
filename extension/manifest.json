@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "ポチマエ — Amazon販売元チェック",
-  "version": "0.1.0",
-  "description": "Amazonの商品ページで1クリック。販売元情報を自動で集めて、ポチマエの確認結果を開きます。",
+  "name": "ダレウリ — Amazon販売元チェック",
+  "version": "0.2.0",
+  "description": "Amazonの商品ページで1クリック。販売元情報を自動で集めて、ダレウリの確認結果を開きます。",
   "action": {
-    "default_title": "ポチマエでチェック",
+    "default_title": "ダレウリでチェック",
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png",

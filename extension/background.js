@@ -1,20 +1,21 @@
-// ポチマエ Chrome拡張 — service worker
+// ダレウリ Chrome拡張 — service worker
 //
 // 設計:
 // - 常駐コンテンツスクリプトなし。ツールバーのボタンを押した瞬間だけ、
 //   activeTab 権限で現在のタブに収集関数を注入する
 // - 収集ロジックは lib/bookmarklet.ts と同一（実Amazonページで検証済み）
-// - 収集結果は URL フラグメント (#s=...&u=...) でポチマエに渡す。
+// - 収集結果は URL フラグメント (#s=...&u=...) でダレウリに渡す。
 //   フラグメントはサーバーに送信されないため、販売元情報・商品URLが
 //   サーバーログに残ることはない
 
-const SITE_ORIGIN = "https://pochimae.vercel.app";
+// lib/brand.ts の SITE_ORIGIN と同じ値。拡張からは import できないので手で合わせる。
+const SITE_ORIGIN = "https://dareuri.app";
 
 // タブ内で実行される収集関数。シリアライズされて注入されるため自己完結。
 async function collectFromPage(siteOrigin) {
   try {
     if (!/(^|\.)amazon\.(co\.jp|com)$/.test(location.hostname)) {
-      return { ok: false, message: "ポチマエ: Amazonの商品ページで押してください" };
+      return { ok: false, message: "ダレウリ: Amazonの商品ページで押してください" };
     }
     const q = (s) => document.querySelector(s);
     const t = (e) => (e ? e.innerText.trim() : "");
@@ -48,7 +49,7 @@ async function collectFromPage(siteOrigin) {
       return {
         ok: false,
         message:
-          "ポチマエ: 販売元情報が見つかりませんでした。商品ページで押してください",
+          "ダレウリ: 販売元情報が見つかりませんでした。商品ページで押してください",
       };
     }
     return {
@@ -61,7 +62,7 @@ async function collectFromPage(siteOrigin) {
         encodeURIComponent(location.origin + location.pathname),
     };
   } catch (e) {
-    return { ok: false, message: "ポチマエ: 情報を取得できませんでした" };
+    return { ok: false, message: "ダレウリ: 情報を取得できませんでした" };
   }
 }
 
@@ -83,7 +84,7 @@ async function runCheck(tab) {
     await chrome.tabs.create({ url: result.url, index: tab.index + 1 });
   } else {
     const message =
-      (result && result.message) || "ポチマエ: 情報を取得できませんでした";
+      (result && result.message) || "ダレウリ: 情報を取得できませんでした";
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
@@ -101,4 +102,4 @@ chrome.action.onClicked.addListener((tab) => {
 });
 
 // テストから同じ経路を叩けるように公開（本番動作には影響しない）
-self.__pochimaeRunCheck = runCheck;
+self.__dareuriRunCheck = runCheck;

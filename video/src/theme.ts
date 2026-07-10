@@ -1,5 +1,5 @@
 // Claude Design tokens（~/.claude/design/claude/DESIGN.md）に準拠。
-// ポチマエ本体と同じ色で、ブランドの一貫性を保つ。
+// ダレウリ本体と同じ色で、ブランドの一貫性を保つ。
 export const T = {
   canvas: '#faf9f5',
   surfaceSoft: '#f5f0e8',
@@ -28,18 +28,18 @@ export const FPS = 30;
 
 // TTSの実測尺（audio/timings.json）＋シーン間の余白0.35秒
 export const SCENES = [
-  { id: 1, sec: 6.03 },
+  { id: 1, sec: 5.67 },
   { id: 2, sec: 10.55 },
-  { id: 3, sec: 5.71 },
-  { id: 4, sec: 13.51 },
-  { id: 5, sec: 4.87 },
+  { id: 3, sec: 5.99 },
+  { id: 4, sec: 12.79 },
+  { id: 5, sec: 4.75 },
   { id: 6, sec: 6.87 },
-  { id: 7, sec: 10.95 },
-  { id: 8, sec: 8.99 },
-  { id: 9, sec: 5.91 },
-  { id: 10, sec: 7.07 },
-  { id: 11, sec: 8.59 },
-  { id: 12, sec: 4.87 },
+  { id: 7, sec: 10.63 },
+  { id: 8, sec: 9.39 },
+  { id: 9, sec: 5.63 },
+  { id: 10, sec: 6.83 },
+  { id: 11, sec: 8.51 },
+  { id: 12, sec: 4.79 },
 ] as const;
 
 export const TOTAL_FRAMES = Math.round(
