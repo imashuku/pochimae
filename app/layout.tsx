@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP, Shippori_Mincho } from "next/font/google";
+import { BRAND_NAME, TAGLINE, SUB_COPY, SITE_ORIGIN } from "@/lib/brand";
 import "./globals.css";
 
 const notoSansJP = Noto_Sans_JP({
@@ -19,10 +20,26 @@ const shipporiMincho = Shippori_Mincho({
   preload: false,
 });
 
+const SITE_TITLE = `${BRAND_NAME}｜${TAGLINE}`;
+const SITE_DESCRIPTION =
+  "Amazonで見落としがちな「販売元」を、購入前に確認するためのツールです。販売元情報を貼り付けるだけで、購入前の確認ポイントを整理します。";
+
 export const metadata: Metadata = {
-  title: "ダレウリ｜ポチる前に、販売元を3秒チェック。",
-  description:
-    "Amazonで見落としがちな「販売元」を、購入前に確認するためのツールです。販売元情報を貼り付けるだけで、購入前の確認ポイントを整理します。",
+  metadataBase: new URL(SITE_ORIGIN),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    url: SITE_ORIGIN,
+    siteName: BRAND_NAME,
+    type: "website",
+    locale: "ja_JP",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: SUB_COPY }],
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({

@@ -121,6 +121,30 @@ const shots = [
     ),
   },
   {
+    // OGP画像。public/og.png として 1200x630 に縮小して配信する（下の縮小処理参照）。
+    // タイムラインの小さい表示で勝負が決まるので、要素は「問い＋結果カードの実例＋URL」だけに絞る。
+    out: 'scripts/.tmp/og.png',
+    w: 2400,
+    h: 1260,
+    html: page(
+      2400,
+      1260,
+      `<div style="display:flex;align-items:center;gap:100px;padding:0 130px;width:100%;height:100%">
+         <div style="flex:1">
+           <div class="kicker" style="font-size:28px">${BRAND_LATIN} — ${BRAND}</div>
+           <h1 style="font-size:104px;color:${T.ink};margin:30px 0 36px;line-height:1.3;letter-spacing:-.02em">
+             その商品、<br><span class="accent">ダレが売ってる？</span></h1>
+           <p style="font-size:40px;color:${T.body};line-height:1.7">ポチる前に、販売元を<b style="color:${T.ink}">3秒</b>チェック。</p>
+           <div style="display:flex;align-items:baseline;gap:30px;margin-top:56px">
+             <div style="font-size:46px;font-weight:700;color:${T.ink}">${SITE}</div>
+             <div style="font-size:30px;color:${T.muted}">無料・登録不要</div>
+           </div>
+         </div>
+         <div class="card" style="width:880px;height:1040px"><img src="${RESULT_CARD}"></div>
+       </div>`,
+    ),
+  },
+  {
     out: 'scripts/.tmp/x-card.png',
     w: 2400,
     h: 1350,
@@ -144,10 +168,14 @@ const shots = [
   },
 ];
 
+// 引数で対象を絞れる（例: node scripts/make-assets.mjs og）。無指定なら全部。
+const only = process.argv[2];
+
 const browser = await chromium.launch();
 mkdirSync(resolve(ROOT, 'scripts/.tmp'), { recursive: true });
 
 for (const s of shots) {
+  if (only && !s.out.includes(only)) continue;
   const p = await browser.newPage({ viewport: { width: s.w, height: s.h } });
   await p.setContent(s.html, { waitUntil: 'networkidle' });
   await p.screenshot({ path: resolve(ROOT, s.out) });
@@ -156,18 +184,27 @@ for (const s of shots) {
 }
 await browser.close();
 
+// OGP画像は2倍で撮ったものを 1200x630 に縮小して public/ へ（2400x1260 は正確に2倍なので歪まない）
+if (!only || only === 'og') {
+  writeFileSync(resolve(ROOT, 'public/og.png'), readFileSync(resolve(ROOT, 'scripts/.tmp/og.png')));
+  execFileSync('sips', ['-z', '630', '1200', resolve(ROOT, 'public/og.png')], { stdio: 'ignore' });
+  console.log('✓ public/og.png (1200x630)');
+}
+
 // 拡張アイコンは1枚の512pxから縮小して書き出す
-const icon = resolve(ROOT, 'scripts/.tmp/icon.png');
-for (const [size, out] of [
-  [16, 'extension/icons/icon16.png'],
-  [32, 'extension/icons/icon32.png'],
-  [48, 'extension/icons/icon48.png'],
-  [128, 'extension/icons/icon128.png'],
-  [128, 'extension/store-assets/store-icon-128.png'],
-]) {
-  writeFileSync(resolve(ROOT, out), readFileSync(icon));
-  execFileSync('sips', ['-z', String(size), String(size), resolve(ROOT, out)], {
-    stdio: 'ignore',
-  });
-  console.log('✓', out, `(${size}px)`);
+if (!only || only === 'icon') {
+  const icon = resolve(ROOT, 'scripts/.tmp/icon.png');
+  for (const [size, out] of [
+    [16, 'extension/icons/icon16.png'],
+    [32, 'extension/icons/icon32.png'],
+    [48, 'extension/icons/icon48.png'],
+    [128, 'extension/icons/icon128.png'],
+    [128, 'extension/store-assets/store-icon-128.png'],
+  ]) {
+    writeFileSync(resolve(ROOT, out), readFileSync(icon));
+    execFileSync('sips', ['-z', String(size), String(size), resolve(ROOT, out)], {
+      stdio: 'ignore',
+    });
+    console.log('✓', out, `(${size}px)`);
+  }
 }
