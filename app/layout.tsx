@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_JP, Shippori_Mincho } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { BRAND_NAME, TAGLINE, SUB_COPY, SITE_ORIGIN } from "@/lib/brand";
+import { structuredData } from "@/lib/structuredData";
 import "./globals.css";
 
 const notoSansJP = Noto_Sans_JP({
@@ -54,6 +55,11 @@ export default function RootLayout({
       className={`${notoSansJP.variable} ${shipporiMincho.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* AI検索・通常検索向けの構造化データ（WebSite / WebApplication / FAQPage） */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData()) }}
+        />
         {children}
         {/* Cookie不使用のアクセス計測。ダレウリのプライバシー方針と一致する。
             数値は Vercel ダッシュボードの Analytics タブで見る。 */}

@@ -4,7 +4,8 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "プライバシーポリシー｜ダレウリ",
   description:
-    "ダレウリおよびChrome拡張機能「ダレウリ — Amazon販売元チェック」における個人情報・利用者情報の取り扱いについて。",
+    "ダレウリ（Amazon販売元チェックツール）のプライバシーポリシー。貼り付けた販売元情報や商品URLをサーバーに保存しない設計と、電話番号のマスク・匿名化した特徴量のみをAIに渡す仕組みについて説明します。",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {
